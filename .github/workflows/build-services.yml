@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - master
-    paths:
-        - "services/**"
 
 permissions: write-all
 
