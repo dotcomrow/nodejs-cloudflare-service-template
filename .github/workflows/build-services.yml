@@ -94,6 +94,7 @@ jobs:
               "type": "workspaces"
             }
           }
+          EOF
           curl \
           --header "Authorization: Bearer ${{ secrets.TFE_TOKEN }}" \
           --header "Content-Type: application/vnd.api+json" \
