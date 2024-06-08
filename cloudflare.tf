@@ -1,10 +1,10 @@
 locals {
-  project_name = "preferences"
+  project_name = "user-prefs"
 }
 
 resource "cloudflare_worker_domain" "user_prefs" {
   account_id = var.cloudflare_account_id
-  hostname   = var.cloudflare_worker_hostname
+  hostname   = "${local.project_name}.${var.domain}"
   service    = "${local.project_name}"
   zone_id    = var.cloudflare_zone_id
 
@@ -13,7 +13,7 @@ resource "cloudflare_worker_domain" "user_prefs" {
 
 resource "cloudflare_worker_route" "user_prefs_route" {
   zone_id     = var.cloudflare_zone_id
-  pattern     = "${var.cloudflare_worker_url_pattern}"
+  pattern     = "${local.project_name}.${var.domain}/*"
   script_name = cloudflare_worker_script.user_prefs.name
 }
 
@@ -36,7 +36,7 @@ resource "cloudflare_worker_script" "user_prefs" {
 
     plain_text_binding {
         name          =  "CORS_DOMAINS"
-        text        =  var.cloudflare_cors_domains
+        text        =  ".*.${var.domain},.*localhost.*"
     }
 
     plain_text_binding {
