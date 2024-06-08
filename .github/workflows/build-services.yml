@@ -86,7 +86,7 @@ jobs:
       - uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.1.1
         id: upload
         with:
-              workspace: ${{ github.repository }}
+              workspace: ${{ github.event.repository.name }}
               directory: release
 
       - name: Create Apply Run
@@ -94,5 +94,5 @@ jobs:
         id: apply-run
         if: success() || failure()
         with:
-          workspace: ${{ github.repository }}
+          workspace: ${{ github.event.repository.name }}
           configuration_version: ${{ steps.upload.outputs.configuration_version_id }}
