@@ -21,3 +21,9 @@ variable "user_profile_svc_endpoint" {
   type        = string
   nullable = false
 }
+
+variable "cloudflare_token" {
+  description = "cloudflare token"
+  type        = string
+  nullable = false
+}
