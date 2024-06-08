@@ -18,11 +18,10 @@ variable "cloudflare_worker_url_pattern" {
   default = "user-prefs.${var.domain}/*"
 }
 
-variable "cloudflare_worker_zone_id" {
+variable "cloudflare_zone_id" {
   description = "cloudflare worker zone id"
   type        = string
   nullable = false
-  default = "${var.cloudflare_zone_id}"
 }
 
 variable "cloudflare_cors_domains" {

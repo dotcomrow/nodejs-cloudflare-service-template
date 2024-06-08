@@ -6,13 +6,13 @@ resource "cloudflare_worker_domain" "user_prefs" {
   account_id = var.cloudflare_account_id
   hostname   = var.cloudflare_worker_hostname
   service    = "${local.project_name}"
-  zone_id    = var.cloudflare_worker_zone_id
+  zone_id    = var.cloudflare_zone_id
 
   depends_on = [ cloudflare_worker_script.user_prefs ]
 }
 
 resource "cloudflare_worker_route" "user_prefs_route" {
-  zone_id     = var.cloudflare_worker_zone_id
+  zone_id     = var.cloudflare_zone_id
   pattern     = "${var.cloudflare_worker_url_pattern}"
   script_name = cloudflare_worker_script.user_prefs.name
 }
