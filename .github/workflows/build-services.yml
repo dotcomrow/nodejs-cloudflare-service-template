@@ -116,3 +116,4 @@ jobs:
         with:
           workspace: ${{ github.event.repository.name }}
           configuration_version: ${{ steps.upload.outputs.configuration_version_id }}
+          plan_only: false
