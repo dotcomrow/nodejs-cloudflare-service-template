@@ -47,8 +47,8 @@ jobs:
       - name: Build
         run: |
           cd release
-          npm --prefix ./services/* install
-          npm --prefix ./services/* run build
+          npm --prefix ./* install
+          npm --prefix ./* run build
 
       - name: Commit
         run: |
