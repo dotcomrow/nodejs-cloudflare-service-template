@@ -41,7 +41,7 @@ resource "cloudflare_worker_script" "user_prefs" {
 
     plain_text_binding {
       name = "USER_PROFILE_SVC_URL"
-      text = var.user_profile_svc_url
+      text = var.user_profile_svc_endpoint
     }
 
     d1_database_binding {
