@@ -89,7 +89,8 @@ jobs:
           {
             "data": {
               "attributes": {
-                "name": "${{ github.event.repository.name }}"
+                "name": "${{ github.event.repository.name }}",
+                "auto-apply": "true"
               },
               "type": "workspaces"
             }
