@@ -83,9 +83,24 @@ jobs:
               core.setFailed(error.message);
             }
 
-      - name: Select or create workspace
+      - name: Create workspace
         run: |
-          terraform workspace select ${{ github.event.repository.name }} || terraform workspace new ${{ github.event.repository.name }}
+          cat > payload.json <<EOF
+          {
+            "data": {
+              "attributes": {
+                "name": "${{ github.event.repository.name }}"
+              },
+              "type": "workspaces"
+            }
+          }
+          curl \
+          --header "Authorization: Bearer ${{ secrets.TFE_TOKEN }}" \
+          --header "Content-Type: application/vnd.api+json" \
+          --request POST \
+          --data @payload.json \
+          https://app.terraform.io/api/v2/organizations/${{ vars.TF_ORGANIZATION }}/workspaces
+
 
       - uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.1.1
         id: upload
