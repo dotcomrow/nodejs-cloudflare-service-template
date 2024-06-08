@@ -1,0 +1,100 @@
+name: Build and Deploy Services
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+        - "services/**"
+
+permissions: write-all
+
+jobs:
+  deploy:
+    env:
+        TF_CLOUD_ORGANIZATION: ${{ vars.TF_ORGANIZATION }}
+        TF_API_TOKEN: ${{ secrets.TFE_TOKEN }}
+    name: "Build and Deploy"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Delete current release branch
+        uses: dawidd6/action-delete-branch@v3
+        with:
+          github_token: ${{github.token}}
+          branches: release
+
+      - name: Create Release branch
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: release # The branch the action should deploy to.
+          folder: . # The folder the action should deploy.
+
+      - name: Checkout Release branch
+        uses: actions/checkout@v3
+        with:
+          ref: release
+          path: release
+
+      - name: Get next version
+        uses: reecetech/version-increment@2023.9.3
+        id: version
+        with:
+          scheme: calver
+          increment: patch
+
+      - name: Build
+        run: |
+          cd release
+          npm --prefix ./services/* install
+          npm --prefix ./services/* run build
+
+      - name: Commit
+        run: |
+          cd release
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          git add .
+          git commit -m "Release ${{ steps.version.outputs.version }}"
+          git push
+
+      - name: Create release
+        uses: "actions/github-script@v6"
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        with:
+          github-token: "${{ github.token }}"
+          script: |
+            try {
+              const response = await github.rest.repos.createRelease({
+                draft: false,
+                generate_release_notes: true,
+                name: process.env.VERSION,
+                owner: context.repo.owner,
+                prerelease: false,
+                repo: context.repo.repo,
+                tag_name: process.env.VERSION,
+                target_commitish: 'release'
+              });
+              core.exportVariable('RELEASE_ID', response.data.id);
+              core.exportVariable('RELEASE_UPLOAD_URL', response.data.upload_url);
+            } catch (error) {
+              core.setFailed(error.message);
+            }
+
+      - uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.1.1
+        id: upload
+        with:
+              workspace: ${{ github.repository }}
+              directory: release
+
+      - name: Create Apply Run
+        uses: hashicorp/tfc-workflows-github/actions/create-run@v1.1.1
+        id: apply-run
+        if: success() || failure()
+        with:
+          workspace: ${{ github.repository }}
+          configuration_version: ${{ steps.upload.outputs.configuration_version_id }}
