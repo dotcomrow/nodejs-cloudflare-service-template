@@ -79,7 +79,7 @@ export async function handleRequest(request, env, context) {
   };
 
   if (request.method === "HEAD") {
-    if (authHeader == env.INITIALIZATION_KEY) {
+    if (authHeader === env.INITIALIZATION_KEY) {
       return new Response(await dbSetup(env), {
         status: 200,
         headers: responseHeaders,
