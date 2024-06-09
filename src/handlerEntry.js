@@ -4,7 +4,7 @@ import {
   handlePut,
   handleDelete,
 } from "./requestHandlers.js";
-import { dbSetup } from "./dbSetup.js";
+import { dbSetup } from "./databaseOperations.js";
 
 export async function handleRequest(request, env, context) {
   var origin = request.headers.get("Origin") || request.headers.get("origin");
