@@ -1,5 +1,7 @@
 import { sqliteTable } from "drizzle-orm/sqlite-core";
 import { jsonb, timestamp, varchar } from "drizzle-orm/pg-core";
+import { drizzle } from "drizzle-orm/d1";
+import { eq } from "drizzle-orm";
 
 export const user_preferences = sqliteTable("user_preferences", {
     account_id: varchar("account_id").notNull().primaryKey(),
