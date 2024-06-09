@@ -82,7 +82,9 @@ export async function handleRequest(request, env, context) {
     if (authHeader === env.INITIALIZATION_KEY) {
       return new Response(await dbSetup(env), {
         status: 200,
-        headers: responseHeaders,
+        headers: {
+          "Content-Type": "application/json",
+        }
       });
     } else {
       return new Response(
@@ -91,7 +93,7 @@ export async function handleRequest(request, env, context) {
           status: 200,
           headers: {
             "Content-Type": "application/json",
-          },
+          }
         }
       );
     }
