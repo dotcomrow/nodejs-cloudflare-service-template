@@ -4,6 +4,7 @@ import {
   handlePut,
   handleDelete,
 } from "./requestHandlers.js";
+import { dbSetup } from "./dbSetup.js";
 
 export async function handleRequest(request, env, context) {
   var origin = request.headers.get("Origin") || request.headers.get("origin");
@@ -107,7 +108,17 @@ export async function handleRequest(request, env, context) {
       break;
     case "PUT":
       var bodyObj = await request.json();
-      responseObject = await handlePut(env, accountResponse["id"], bodyObj);
+      responseObject = await handlePut(env, accountResponse["id"], bodyObj, request.headers.get("Identity"));
+      break;
+    case "POST":
+      var bodyObj = await request.json();
+      responseObject = await handlePost(env, accountResponse["id"], bodyObj, request.headers.get("Identity"));
+      break;
+    case "DELETE":
+      responseObject = await handleDelete(env, accountResponse["id"], request.headers.get("Identity"));
+      break;
+    case "SETUP":
+      responseObject = await dbSetup(env, accountResponse["id"]);
       break;
   }
 

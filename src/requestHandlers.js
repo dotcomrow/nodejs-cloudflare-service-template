@@ -1,42 +1,9 @@
-import { sqliteTable } from "drizzle-orm/sqlite-core";
-import { jsonb, timestamp, varchar } from "drizzle-orm/pg-core";
 import { drizzle } from "drizzle-orm/d1";
 import { eq } from "drizzle-orm";
 
-const user_preferences = sqliteTable("user_preferences", {
-  account_id: varchar("account_id").notNull().primaryKey(),
-  preferences: jsonb("preferences").notNull(),
-  last_update_datetime: timestamp("last_update_datetime").notNull(),
-});
-
-async function dbSetup(env) {
-  const user_preferences = sqliteTable("user_preferences", {
-    account_id: varchar("account_id").notNull().primaryKey(),
-    preferences: jsonb("preferences").notNull(),
-    last_update_datetime: timestamp("last_update_datetime").notNull(),
-  });
-
-  const db = drizzle(env.user_prefs_database);
-  try {
-    await db
-      .select()
-      .from(user_preferences)
-      .where(eq(user_preferences.account_id, accountResponse["id"]));
-  } catch (error) {
-    await env.user_prefs_database
-      .prepare(
-        `CREATE TABLE user_preferences (
-      account_id varchar(64) PRIMARY KEY,
-      preferences jsonb,
-      last_update_datetime timestamp)`
-      )
-      .run();
-  }
-}
-
 export async function handleGet(env, account_id, id_token) {
   var returnObject = {};
-  dbSetup(env);
+  
   if (id_token) {
     var backendResp = await fetch(env.USER_PROFILE_SVC_URL, {
       method: "GET",
@@ -80,7 +47,6 @@ export async function handleGet(env, account_id, id_token) {
 }
 
 export async function handlePut(env, account_id, new_preference) {
-  dbSetup(env);
   var ret = await handleGet(env, account_id);
   if (!("account_id" in ret)) {
     return {};
