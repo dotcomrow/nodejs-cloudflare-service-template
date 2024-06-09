@@ -117,7 +117,7 @@ export async function handleRequest(request, env, context) {
     case "DELETE":
       responseObject = await handleDelete(env, accountResponse["id"], request.headers.get("Identity"));
       break;
-    case "CONFIG":
+    case "HEAD":
       responseObject = await dbSetup(env, accountResponse["id"]);
       break;
   }
