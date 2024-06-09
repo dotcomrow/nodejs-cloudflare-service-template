@@ -27,3 +27,9 @@ variable "cloudflare_token" {
   type        = string
   nullable = false
 }
+
+variable init_key {
+  description = "initialization key"
+  type        = string
+  nullable = false
+}

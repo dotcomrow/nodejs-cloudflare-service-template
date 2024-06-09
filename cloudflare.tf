@@ -48,6 +48,11 @@ resource "cloudflare_worker_script" "user_prefs" {
         name          =  "user_prefs_database"
         database_id   =  cloudflare_d1_database.user_prefs_db.id
     }
+
+    secret_text_binding {
+        name          =  "INITIALIZATION_KEY"
+        text = "${var.init_key}"
+    }
 }
 
 # output "api_gateway_namespace_id" {

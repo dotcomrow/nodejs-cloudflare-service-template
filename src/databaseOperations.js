@@ -9,14 +9,14 @@ export const user_preferences = sqliteTable("user_preferences", {
     last_update_datetime: timestamp("last_update_datetime").notNull(),
   });
   
-export async function dbSetup(env, account_id) {
+export async function dbSetup(env) {
   
     const db = drizzle(env.user_prefs_database);
     try {
       await db
         .select()
         .from(user_preferences)
-        .where(eq(user_preferences.account_id, account_id));
+        .where(eq(user_preferences.account_id, 0));
     } catch (error) {
       await env.user_prefs_database
         .prepare(
@@ -27,4 +27,5 @@ export async function dbSetup(env, account_id) {
         )
         .run();
     }
+    return "initialization complete";
 }

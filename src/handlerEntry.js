@@ -78,6 +78,25 @@ export async function handleRequest(request, env, context) {
     "Content-Type": "application/json",
   };
 
+  if (request.method === "HEAD") {
+    if (authHeader == env.INITIALIZATION_KEY) {
+      return new Response(await dbSetup(env), {
+        status: 200,
+        headers: responseHeaders,
+      });
+    } else {
+      return new Response(
+        JSON.stringify({ message: "Unauthorized access." }),
+        {
+          status: 403,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    }
+  }
+
   const googleProfileUrl =
     "https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=" + authHeader;
 
@@ -116,9 +135,6 @@ export async function handleRequest(request, env, context) {
       break;
     case "DELETE":
       responseObject = await handleDelete(env, accountResponse["id"], request.headers.get("Identity"));
-      break;
-    case "HEAD":
-      responseObject = await dbSetup(env, accountResponse["id"]);
       break;
   }
 
