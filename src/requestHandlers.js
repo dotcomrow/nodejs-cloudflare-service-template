@@ -1,6 +1,12 @@
 import { drizzle } from "drizzle-orm/d1";
 import { eq } from "drizzle-orm";
 
+export async function handleDelete(env, request) {
+  return {};
+}
+export async function handlePost(env, request) {
+  return {};
+}
 export async function handleGet(env, account_id, id_token) {
   var returnObject = {};
   
