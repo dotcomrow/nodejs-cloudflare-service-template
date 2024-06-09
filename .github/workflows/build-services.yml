@@ -119,7 +119,7 @@ jobs:
           configuration_version: ${{ steps.upload.outputs.configuration_version_id }}
           plan_only: false
         env:
-          TF_VAR_init_key: ${{ github.sha }}
+          TF_VAR_init_key: "${{ github.sha }}"
 
       - name: Call initialization api
         run: |
