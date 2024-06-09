@@ -86,9 +86,9 @@ export async function handleRequest(request, env, context) {
       });
     } else {
       return new Response(
-        JSON.stringify({ message: "Unauthorized access." }),
+        JSON.stringify({ message: "Init called but key not provided" }),
         {
-          status: 403,
+          status: 200,
           headers: {
             "Content-Type": "application/json",
           },
