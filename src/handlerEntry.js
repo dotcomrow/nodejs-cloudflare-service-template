@@ -81,31 +81,34 @@ export async function handleRequest(request, env, context) {
   if (request.method === "HEAD") {
     console.log("init key -> " + env.INITIALIZATION_KEY);
     console.log("authHeader -> " + authHeader);
-    if (authHeader == env.INITIALIZATION_KEY) {
+    if (
+      new String(authHeader).valueOf() ==
+      new String(env.INITIALIZATION_KEY).valueOf()
+    ) {
       console.log("Init called with init key -> " + env.INITIALIZATION_KEY);
-      return new Response(
-        JSON.stringify({ message: await dbSetup(env) }), {
+      return new Response(JSON.stringify({ message: await dbSetup(env) }), {
         status: 200,
         headers: {
           "Content-Type": "application/json",
-        }
+        },
       });
     } else {
-      console.log("Init called but key not provided");
+      console.log("Init called but key not provided or incorrect");
       return new Response(
         JSON.stringify({ message: "Init called but key not provided" }),
         {
           status: 200,
           headers: {
             "Content-Type": "application/json",
-          }
+          },
         }
       );
     }
   }
 
   const googleProfileUrl =
-    "https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=" + authHeader;
+    "https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=" +
+    authHeader;
 
   var response = await fetch(googleProfileUrl, {
     method: "GET",
@@ -130,18 +133,36 @@ export async function handleRequest(request, env, context) {
   var responseObject = {};
   switch (request.method) {
     case "GET":
-      responseObject = await handleGet(env, accountResponse["id"], request.headers.get("Identity"));
+      responseObject = await handleGet(
+        env,
+        accountResponse["id"],
+        request.headers.get("Identity")
+      );
       break;
     case "PUT":
       var bodyObj = await request.json();
-      responseObject = await handlePut(env, accountResponse["id"], bodyObj, request.headers.get("Identity"));
+      responseObject = await handlePut(
+        env,
+        accountResponse["id"],
+        bodyObj,
+        request.headers.get("Identity")
+      );
       break;
     case "POST":
       var bodyObj = await request.json();
-      responseObject = await handlePost(env, accountResponse["id"], bodyObj, request.headers.get("Identity"));
+      responseObject = await handlePost(
+        env,
+        accountResponse["id"],
+        bodyObj,
+        request.headers.get("Identity")
+      );
       break;
     case "DELETE":
-      responseObject = await handleDelete(env, accountResponse["id"], request.headers.get("Identity"));
+      responseObject = await handleDelete(
+        env,
+        accountResponse["id"],
+        request.headers.get("Identity")
+      );
       break;
   }
 
