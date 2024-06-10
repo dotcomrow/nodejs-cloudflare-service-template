@@ -79,25 +79,21 @@ export async function handleRequest(request, env, context) {
   };
 
   if (request.method === "HEAD") {
-    console.log("init key -> " + env.INITIALIZATION_KEY);
-    console.log("authHeader -> " + authHeader);
     if (
       new String(authHeader).valueOf() ==
       new String(env.INITIALIZATION_KEY).valueOf()
     ) {
-      console.log("Init called with init key -> " + env.INITIALIZATION_KEY);
-      return new Response(JSON.stringify({ message: await dbSetup(env) }), {
+      await dbSetup(env);
+      return new Response("", {
         status: 200,
         headers: {
           "Content-Type": "application/json",
         },
       });
     } else {
-      console.log("Init called but key not provided or incorrect");
-      return new Response(
-        JSON.stringify({ message: "Init called but key not provided" }),
+      return new Response("",
         {
-          status: 200,
+          status: 403,
           headers: {
             "Content-Type": "application/json",
           },
