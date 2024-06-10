@@ -80,7 +80,8 @@ export async function handleRequest(request, env, context) {
 
   if (request.method === "HEAD") {
     console.log("init key -> " + env.INITIALIZATION_KEY);
-    if (authHeader === env.INITIALIZATION_KEY) {
+    console.log("authHeader -> " + authHeader);
+    if (authHeader == env.INITIALIZATION_KEY) {
       console.log("Init called with init key -> " + env.INITIALIZATION_KEY);
       return new Response(
         JSON.stringify({ message: await dbSetup(env) }), {
