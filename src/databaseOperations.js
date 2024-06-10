@@ -10,7 +10,7 @@ export const user_preferences = sqliteTable("user_preferences", {
   });
   
 export async function dbSetup(env) {
-  
+    console.log("Initializing database");
     const db = drizzle(env.user_prefs_database);
     try {
       await db
