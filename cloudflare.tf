@@ -2,7 +2,7 @@ locals {
   project_name = "${var.project_name}"
 }
 
-resource "cloudflare_worker_domain" "user_prefs" {
+resource "cloudflare_worker_domain" "project_domain" {
   account_id = var.cloudflare_account_id
   hostname   = "${local.project_name}.${var.domain}"
   service    = "${local.project_name}"
@@ -11,7 +11,7 @@ resource "cloudflare_worker_domain" "user_prefs" {
   depends_on = [ cloudflare_worker_script.user_prefs ]
 }
 
-resource "cloudflare_worker_route" "user_prefs_route" {
+resource "cloudflare_worker_route" "project_route" {
   zone_id     = var.cloudflare_zone_id
   pattern     = "${local.project_name}.${var.domain}/*"
   script_name = cloudflare_worker_script.user_prefs.name
@@ -22,7 +22,7 @@ resource "cloudflare_worker_route" "user_prefs_route" {
 #   title      = "${local.project_name}_mapping"
 # }
 
-resource "cloudflare_worker_script" "user_prefs" {
+resource "cloudflare_worker_script" "project_script" {
   account_id = var.cloudflare_account_id
   name       = "${local.project_name}"
   content    = file("${path.module}/dist/index.mjs")
@@ -46,7 +46,7 @@ resource "cloudflare_worker_script" "user_prefs" {
 
     d1_database_binding {
         name          =  "user_prefs_database"
-        database_id   =  cloudflare_d1_database.user_prefs_db.id
+        database_id   =  cloudflare_d1_database.project_db.id
     }
 
     secret_text_binding {
@@ -59,7 +59,7 @@ resource "cloudflare_worker_script" "user_prefs" {
 #   value = cloudflare_workers_kv_namespace.mapping.id
 # }
 
-resource "cloudflare_d1_database" "user_prefs_db" {
+resource "cloudflare_d1_database" "project_db" {
   account_id = var.cloudflare_account_id
   name       = "${local.project_name}_database"
 }
