@@ -26,6 +26,7 @@ jobs:
           if [ $? -eq 0 ]; then
             git checkout -b release
             git push origin release
+            git push --set-upstream origin release
           fi
 
       - name: Delete current release branch
