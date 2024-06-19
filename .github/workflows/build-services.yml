@@ -22,11 +22,11 @@ jobs:
       - name: Create release branch if it doesn't exist
         continue-on-error: true
         run: |
-          git checkout -b release || exit 1
-          git rebase master
-          git push origin release
-      
-          git checkout master
+          git ls-remote --heads origin release
+          if [ $? -ne 0 ]; then
+            git checkout -b release
+            git push origin release
+          fi
 
       - name: Delete current release branch
         uses: dawidd6/action-delete-branch@v3
