@@ -34,12 +34,6 @@ jobs:
           github_token: ${{github.token}}
           branches: release
 
-      - name: Create Release branch
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          branch: release # The branch the action should deploy to.
-          folder: . # The folder the action should deploy.
-
       - name: Checkout Release branch
         uses: actions/checkout@v3
         with:
