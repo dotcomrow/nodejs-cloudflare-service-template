@@ -28,12 +28,6 @@ jobs:
       
           git checkout master
 
-      - name: Delete current release branch
-        uses: dawidd6/action-delete-branch@v3
-        with:
-          github_token: ${{github.token}}
-          branches: release
-
       - name: Checkout Release branch
         uses: actions/checkout@v3
         with:
