@@ -19,6 +19,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Create release branch if it doesn't exist
+        continue-on-error: true
+        run: |
+          git checkout -b release || exit 1
+          git rebase master
+          git push origin release
+      
+          git checkout master
+
       - name: Delete current release branch
         uses: dawidd6/action-delete-branch@v3
         with:
