@@ -1,5 +1,5 @@
 locals {
-  project_name = "user-prefs"
+  project_name = "${var.project_name}"
 }
 
 resource "cloudflare_worker_domain" "user_prefs" {
