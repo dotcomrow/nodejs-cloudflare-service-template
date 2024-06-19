@@ -23,7 +23,7 @@ jobs:
         continue-on-error: true
         run: |
           git ls-remote --heads origin release
-          if [ $? -ne 0 ]; then
+          if [ $? -eq 0 ]; then
             git checkout -b release
             git push origin release
           fi
