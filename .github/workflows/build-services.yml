@@ -117,6 +117,8 @@ jobs:
           plan_only: false
         env:
           TF_VAR_init_key: "\"${{ github.sha }}\""
+          TF_VAR_project_id: "\"${{ github.event.repository.name }}\""
+          TF_VAR_project_name: "\"${{ github.event.repository.name }}\""
 
       - name: Call initialization api
         run: |

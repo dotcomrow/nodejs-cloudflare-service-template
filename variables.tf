@@ -33,3 +33,15 @@ variable init_key {
   type        = string
   nullable = false
 }
+
+variable project_name {
+  description = "project name"
+  type        = string
+  nullable = false
+}
+
+variable project_id {
+  description = "project id"
+  type        = string
+  nullable = false
+}
