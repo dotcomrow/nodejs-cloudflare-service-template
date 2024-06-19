@@ -22,7 +22,7 @@ jobs:
       - name: Create release branch if it doesn't exist
         continue-on-error: true
         run: |
-          git checkout -b release ; git branch -d release ; git push origin --delete release || exit 1
+          git checkout -b release ; git checkout -b master ; git branch -d release ; git push origin --delete release || exit 1
           git rebase master
           git push origin release
       
