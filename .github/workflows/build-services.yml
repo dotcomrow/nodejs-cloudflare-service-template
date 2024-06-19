@@ -22,11 +22,23 @@ jobs:
       - name: Create release branch if it doesn't exist
         continue-on-error: true
         run: |
-          git checkout -b release ; git checkout -b master ; git branch -d release ; git push origin --delete release || exit 1
+          git checkout -b release || exit 1
           git rebase master
           git push origin release
       
           git checkout master
+
+      - name: Delete current release branch
+        uses: dawidd6/action-delete-branch@v3
+        with:
+          github_token: ${{github.token}}
+          branches: release
+
+      - name: Create Release branch
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: release # The branch the action should deploy to.
+          folder: . # The folder the action should deploy.
 
       - name: Checkout Release branch
         uses: actions/checkout@v3
@@ -117,8 +129,6 @@ jobs:
           plan_only: false
         env:
           TF_VAR_init_key: "\"${{ github.sha }}\""
-          TF_VAR_project_id: "\"${{ github.event.repository.name }}\""
-          TF_VAR_project_name: "\"${{ github.event.repository.name }}\""
 
       - name: Call initialization api
         run: |
