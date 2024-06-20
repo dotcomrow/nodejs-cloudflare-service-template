@@ -30,6 +30,7 @@ jobs:
             git checkout -b release
             git push origin release
             git push --set-upstream origin release
+            git commit --allow-empty -m "Initial commit"
             git checkout master
           else
             git pull origin release
