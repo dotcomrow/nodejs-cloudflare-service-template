@@ -31,7 +31,6 @@ jobs:
             git push origin release
             git push --set-upstream origin release
             git checkout master
-            git branch -d release
           else
             git pull origin release
             git branch -d release
