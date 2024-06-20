@@ -36,12 +36,6 @@ jobs:
             git pull origin release
           fi
 
-      - name: Delete current release branch
-        uses: dawidd6/action-delete-branch@v3
-        with:
-          github_token: ${{github.token}}
-          branches: release
-
       - name: Create Release branch
         uses: JamesIves/github-pages-deploy-action@v4
         with:
