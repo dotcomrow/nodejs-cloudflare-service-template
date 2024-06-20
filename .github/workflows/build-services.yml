@@ -22,8 +22,8 @@ jobs:
       - name: Create release branch if it doesn't exist
         continue-on-error: true
         run: |
-          git ls-remote --heads origin release
-          if [ $? -eq 0 ]; then
+          resp=`git ls-remote --heads origin release | wc -m | | sed 's/ //g'`
+          if [ $resp -gt 0 ]; then
             git checkout -b release
             git push origin release
             git push --set-upstream origin release
