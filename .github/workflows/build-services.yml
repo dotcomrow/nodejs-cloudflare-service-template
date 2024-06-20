@@ -33,7 +33,6 @@ jobs:
             git checkout master
           else
             git pull origin release
-            git branch -d release
           fi
 
       - name: Delete current release branch
