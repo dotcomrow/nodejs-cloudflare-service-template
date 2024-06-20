@@ -25,7 +25,7 @@ jobs:
           git ls-remote --heads origin release
           if [ $? -eq 0 ]; then
             git checkout -b release
-            git pull
+            git pull origin release
             git push origin release
             git push --set-upstream origin release
             git checkout master
