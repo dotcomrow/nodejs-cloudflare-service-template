@@ -22,7 +22,7 @@ jobs:
       - name: Create release branch if it doesn't exist
         continue-on-error: true
         run: |
-          resp=`git ls-remote --heads origin release | wc -m | | sed 's/ //g'`
+          resp=`git ls-remote --heads origin release | wc -m | sed 's/ //g'`
           if [ $resp -gt 0 ]; then
             git checkout -b release
             git push origin release
