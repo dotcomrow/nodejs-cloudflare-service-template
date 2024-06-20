@@ -27,6 +27,7 @@ jobs:
             git checkout -b release
             git push origin release
             git push --set-upstream origin release
+            git branch -d release
           fi
 
       - name: Delete current release branch
