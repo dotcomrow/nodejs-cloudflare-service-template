@@ -27,7 +27,7 @@ jobs:
             git checkout -b release
             git push origin release
             git push --set-upstream origin release
-            git checkout -b master
+            git checkout master
             git branch -d release
           fi
 
