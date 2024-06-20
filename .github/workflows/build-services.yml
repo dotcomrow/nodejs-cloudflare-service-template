@@ -23,7 +23,7 @@ jobs:
         continue-on-error: true
         run: |
           resp=`git ls-remote --heads origin release | wc -m | sed 's/ //g'`
-          if [ $resp -gt 0 ]; then
+          if [ $resp -eq 0 ]; then
             git checkout -b release
             git push origin release
             git push --set-upstream origin release
