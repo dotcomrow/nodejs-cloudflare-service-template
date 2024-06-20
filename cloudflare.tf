@@ -8,13 +8,13 @@ resource "cloudflare_worker_domain" "project_domain" {
   service    = "${local.project_name}"
   zone_id    = var.cloudflare_zone_id
 
-  depends_on = [ cloudflare_worker_script.user_prefs ]
+  depends_on = [ cloudflare_worker_script.project_script ]
 }
 
 resource "cloudflare_worker_route" "project_route" {
   zone_id     = var.cloudflare_zone_id
   pattern     = "${local.project_name}.${var.domain}/*"
-  script_name = cloudflare_worker_script.user_prefs.name
+  script_name = cloudflare_worker_script.project_script.name
 }
 
 # resource "cloudflare_workers_kv_namespace" "mapping" {
