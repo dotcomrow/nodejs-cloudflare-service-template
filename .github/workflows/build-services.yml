@@ -26,14 +26,8 @@ jobs:
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
           git config pull.rebase true
           resp=`git ls-remote --heads origin release | wc -m | sed 's/ //g'`
-          if [ $resp -eq 0 ]; then
-            git checkout -b release
-            git push origin release
-            git push --set-upstream origin release
-            git commit --allow-empty -m "Initial commit"
-            git checkout master
-          else
-            git pull origin release
+          if [ $resp -gt 0 ]; then
+            git branch -d release
           fi
 
       - name: Create Release branch
