@@ -6,9 +6,9 @@ const __dirname = path.dirname(__filename);
 
 export default {
     entry: "./src/index.js",
-    mode: "development",
+    mode: "production",
     optimization: {
-      minimize: false
+      minimize: true
     },
     performance: {
       hints: false
