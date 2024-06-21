@@ -78,6 +78,7 @@ export async function handleRequest(request, env, context) {
     "Content-Type": "application/json",
   };
 
+  console.log(this.href.substring(this.href.lastIndexOf('/') + 1))
   if (request.method === "HEAD") {
     if (
       this.href.substring(this.href.lastIndexOf('/') + 1) ==
