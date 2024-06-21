@@ -12,6 +12,7 @@ jobs:
     env:
         TF_CLOUD_ORGANIZATION: ${{ vars.TF_ORGANIZATION }}
         TF_API_TOKEN: ${{ secrets.TFE_TOKEN }}
+        INIT_TOKEN: "Bearer ${{ github.sha }}"
     name: "Build and Deploy"
     runs-on: ubuntu-latest
 
@@ -130,4 +131,4 @@ jobs:
 
       - name: Call initialization api
         run: |
-          curl --location --head 'https://${{ github.event.repository.name }}.suncoast.systems' --header 'Authorization: Bearer ${{ github.sha }}'
+          curl --location --head 'https://${{ github.event.repository.name }}.suncoast.systems' --header 'Authorization: ${{ env.INIT_TOKEN }}'
