@@ -136,4 +136,4 @@ jobs:
 
       - name: Call initialization api
         run: |
-          curl --location --head 'https://user-prefs.suncoast.systems' --header 'Authorization: Bearer ${{ github.sha }}'
+          curl --location --head 'https://${{ github.event.repository.name }}.suncoast.systems' --header 'Authorization: Bearer ${{ github.sha }}'
