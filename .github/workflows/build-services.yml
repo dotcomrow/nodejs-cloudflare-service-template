@@ -27,7 +27,7 @@ jobs:
           git config pull.rebase true
           resp=`git ls-remote --heads origin release | wc -m | sed 's/ //g'`
           if [ $resp -gt 0 ]; then
-            git branch -d release
+            git push origin --delete release
           fi
 
       - name: Create Release branch
