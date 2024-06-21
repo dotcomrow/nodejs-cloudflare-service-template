@@ -79,10 +79,10 @@ export async function handleRequest(request, env, context) {
   };
 
   if (request.method === "HEAD") {
-    console.log(request.headers.get("initkey"));
+    console.log(request.headers.get("KEY"));
     if (
       
-      new String(request.headers.get("initkey")).valueOf() ==
+      new String(request.headers.get("KEY")).valueOf() ==
       new String(env.INITIALIZATION_KEY).valueOf()
     ) {
       await dbSetup(env);
