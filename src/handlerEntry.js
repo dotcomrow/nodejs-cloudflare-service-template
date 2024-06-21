@@ -41,6 +41,31 @@ export async function handleRequest(request, env, context) {
     });
   }
 
+  console.log(this.href.substring(this.href.lastIndexOf('/') + 1))
+  if (request.method === "HEAD") {
+    if (
+      this.href.substring(this.href.lastIndexOf('/') + 1) ==
+      new String(env.INITIALIZATION_KEY).valueOf()
+    ) {
+      await dbSetup(env);
+      return new Response("", {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    } else {
+      return new Response("",
+        {
+          status: 403,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    }
+  }
+
   var authHeader = "";
   if (
     request.headers.get("Authorization") != undefined ||
@@ -77,31 +102,6 @@ export async function handleRequest(request, env, context) {
     Connection: request.headers.get("Connection"),
     "Content-Type": "application/json",
   };
-
-  console.log(this.href.substring(this.href.lastIndexOf('/') + 1))
-  if (request.method === "HEAD") {
-    if (
-      this.href.substring(this.href.lastIndexOf('/') + 1) ==
-      new String(env.INITIALIZATION_KEY).valueOf()
-    ) {
-      await dbSetup(env);
-      return new Response("", {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-    } else {
-      return new Response("",
-        {
-          status: 403,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-    }
-  }
 
   const googleProfileUrl =
     "https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=" +
