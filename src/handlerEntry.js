@@ -79,7 +79,8 @@ export async function handleRequest(request, env, context) {
   };
 
   if (request.method === "HEAD") {
-    console.log("from -> " + request.headers.get("from"));
+    console.log("test")
+    console.log("from -> " + request.headers.get("from"))
     if (
       
       new String(request.headers.get("from")).valueOf() ==
