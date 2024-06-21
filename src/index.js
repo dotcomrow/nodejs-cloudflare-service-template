@@ -1,6 +1,6 @@
 import { handleRequest } from "./handlerEntry.js";
 import { serializeError } from "serialize-error";
-const {Logging} = require('@google-cloud/logging');
+import {Logging} from '@google-cloud/logging';
 
 export default {
   async fetch(request, env, context) {
