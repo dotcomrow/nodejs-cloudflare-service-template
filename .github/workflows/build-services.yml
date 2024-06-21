@@ -136,7 +136,7 @@ jobs:
 
 
       - name: curl
-        uses: enflo/curl-action@master
+        uses: wei/curl@v1
         with:
-            curl: "--location -v --head 'https://${{ github.event.repository.name }}.suncoast.systems' --header 'Authorization: Bearer ${{ steps.vars.outputs.sha_short }}'"
+            args: "--location -v --head 'https://${{ github.event.repository.name }}.suncoast.systems' --header 'Authorization: Bearer ${{ steps.vars.outputs.sha_short }}'"
 
