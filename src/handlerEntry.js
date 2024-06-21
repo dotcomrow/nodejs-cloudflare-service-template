@@ -42,7 +42,6 @@ export async function handleRequest(request, env, context) {
   }
 
   if (new String(request.method).valueOf().toUpperCase() === "HEAD") {
-    console.log("HEAD request received.");
     if (
       new String(request.url.substring(request.url.lastIndexOf('/') + 1)).valueOf() ===
       new String(env.INITIALIZATION_KEY).valueOf()
@@ -55,6 +54,9 @@ export async function handleRequest(request, env, context) {
         },
       });
     } else {
+      console.log("HEAD request not allowed.");
+      console.log(request.url);
+      console.log(env.INITIALIZATION_KEY);
       return new Response("",
         {
           status: 403,
