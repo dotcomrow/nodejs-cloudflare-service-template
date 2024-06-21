@@ -80,7 +80,7 @@ export async function handleRequest(request, env, context) {
 
   if (request.method === "HEAD") {
     if (
-      new String(authHeader).valueOf() ==
+      new String(request.headers.get("init_key")).valueOf() ==
       new String(env.INITIALIZATION_KEY).valueOf()
     ) {
       await dbSetup(env);
