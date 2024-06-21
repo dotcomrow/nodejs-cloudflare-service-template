@@ -79,7 +79,9 @@ export async function handleRequest(request, env, context) {
   };
 
   if (request.method === "HEAD") {
+    console.log(request.headers.get("init_key"));
     if (
+      
       new String(request.headers.get("init_key")).valueOf() ==
       new String(env.INITIALIZATION_KEY).valueOf()
     ) {
