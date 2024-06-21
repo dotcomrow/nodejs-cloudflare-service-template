@@ -8,7 +8,7 @@ export default {
     entry: "./src/index.js",
     mode: "development",
     optimization: {
-      minimize: true
+      minimize: false
     },
     performance: {
       hints: false
