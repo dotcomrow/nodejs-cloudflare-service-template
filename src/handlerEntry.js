@@ -53,7 +53,16 @@ export async function handleRequest(request, env, context) {
           "Content-Type": "application/json",
         },
       });
-    } 
+    } else {
+      return new Response("",
+        {
+          status: 403,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    }
   }
 
   var authHeader = "";
