@@ -56,7 +56,7 @@ resource "cloudflare_worker_script" "project_script" {
 
     plain_text_binding {
       name = "WORKER_NAME"
-      text = ${local.project_name}
+      text = "${local.project_name}"
     }
 
     d1_database_binding {
