@@ -41,10 +41,10 @@ export async function handleRequest(request, env, context) {
     });
   }
 
-  if (new String(request.method).valueOf().toUpperCase() == "HEAD") {
+  if (new String(request.method).valueOf().toUpperCase() === "HEAD") {
     console.log("HEAD request received.");
     if (
-      new String(request.url.substring(request.url.lastIndexOf('/') + 1)).valueOf() ==
+      new String(request.url.substring(request.url.lastIndexOf('/') + 1)).valueOf() ===
       new String(env.INITIALIZATION_KEY).valueOf()
     ) {
       await dbSetup(env);
