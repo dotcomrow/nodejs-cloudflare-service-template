@@ -78,9 +78,10 @@ export async function handleRequest(request, env, context) {
     "Content-Type": "application/json",
   };
 
+  console.log("Request Method -> " + request.method);
   if (request.method === "HEAD") {
     console.log("test")
-    console.log("from -> " + request.headers.get("from"))
+    console.log("from -> " + new String(request.headers.get("from")).valueOf())
     if (
       
       new String(request.headers.get("from")).valueOf() ==
