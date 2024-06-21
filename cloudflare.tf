@@ -40,8 +40,23 @@ resource "cloudflare_worker_script" "project_script" {
     }
 
     plain_text_binding {
+        name          =  "GCP_LOGGING_PROJECT_ID"
+        text        =  "${var.GCP_LOGGING_PROJECT_ID}" 
+    }
+
+    plain_text_binding {
+       name = "LOG_NAME"
+        text = "${local.project_name}_worker_log"
+    }
+
+    plain_text_binding {
       name = "USER_PROFILE_SVC_URL"
       text = var.user_profile_svc_endpoint
+    }
+
+    plain_text_binding {
+      name = "WORKER_NAME"
+      text = ${local.project_name}
     }
 
     d1_database_binding {
