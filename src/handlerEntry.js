@@ -78,13 +78,9 @@ export async function handleRequest(request, env, context) {
     "Content-Type": "application/json",
   };
 
-  console.error("Request Method -> " + request.method);
   if (request.method === "HEAD") {
-    console.error("test")
-    console.error("from -> " + new String(request.headers.get("from")).valueOf())
     if (
-      
-      new String(request.headers.get("from")).valueOf() ==
+      authHeader ==
       new String(env.INITIALIZATION_KEY).valueOf()
     ) {
       await dbSetup(env);
