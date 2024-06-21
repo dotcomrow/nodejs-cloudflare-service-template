@@ -228,9 +228,9 @@ jobs:
           TF_VAR_init_key: "\"${{ steps.vars.outputs.sha_short }}\""
 
       - name: call initialization code
-        run: |
-          wget --method=HEAD \
-            --header="Authorization: Bearer ${{ steps.vars.outputs.sha_short }}" \
-            --output-document - \
-            https://${{ github.event.repository.name }}.suncoast.systems
+        uses: fjogeleit/http-request-action@v1
+        with:
+            url: 'https://${{ github.event.repository.name }}.suncoast.systems'
+            method: 'HEAD'
+            bearerToken: ${{ steps.vars.outputs.sha_short }}
 
