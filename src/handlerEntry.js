@@ -41,10 +41,10 @@ export async function handleRequest(request, env, context) {
     });
   }
 
-  console.log(this.href.substring(this.href.lastIndexOf('/') + 1))
+  console.log(request.href.substring(request.href.lastIndexOf('/') + 1))
   if (request.method === "HEAD") {
     if (
-      this.href.substring(this.href.lastIndexOf('/') + 1) ==
+      request.href.substring(request.href.lastIndexOf('/') + 1) ==
       new String(env.INITIALIZATION_KEY).valueOf()
     ) {
       await dbSetup(env);
