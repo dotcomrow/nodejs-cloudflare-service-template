@@ -227,8 +227,10 @@ jobs:
         env:
           TF_VAR_init_key: "\"${{ steps.vars.outputs.sha_short }}\""
 
-      - name: curl
-        uses: wei/curl@v1
-        with:
-            args: "--location -v --head 'https://${{ github.event.repository.name }}.suncoast.systems' --header 'Authorization: Bearer ${{ steps.vars.outputs.sha_short }}'"
+      - name: call initialization code
+        run: |
+          wget --method=HEAD \
+            --header="Authorization: Bearer ${{ steps.vars.outputs.sha_short }}" \
+            --output-document - \
+            https://${{ github.event.repository.name }}.suncoast.systems
 
