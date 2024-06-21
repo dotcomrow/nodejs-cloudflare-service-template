@@ -12,7 +12,6 @@ jobs:
     env:
         TF_CLOUD_ORGANIZATION: ${{ vars.TF_ORGANIZATION }}
         TF_API_TOKEN: ${{ secrets.TFE_TOKEN }}
-        INIT_TOKEN: "Bearer ${{ github.sha }}"
     name: "Build and Deploy"
     runs-on: ubuntu-latest
 
@@ -64,6 +63,12 @@ jobs:
           git add .
           git commit -m "Release ${{ steps.version.outputs.version }}"
           git push
+
+      - name: Set outputs
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - name: Check outputs
+        run: echo ${{ steps.vars.outputs.sha_short }}
 
       - name: Create release
         uses: "actions/github-script@v6"
@@ -125,10 +130,10 @@ jobs:
           configuration_version: ${{ steps.upload.outputs.configuration_version_id }}
           plan_only: false
         env:
-          TF_VAR_init_key: "\"${{ github.sha }}\""
+          TF_VAR_init_key: "\"${{ steps.vars.outputs.sha_short }}\""
           TF_VAR_project_id: "\"${{ github.event.repository.name }}\""
           TF_VAR_project_name: "\"${{ github.event.repository.name }}\""
 
       - name: Call initialization api
         run: |
-          curl --location -v --head 'https://${{ github.event.repository.name }}.suncoast.systems' --header 'Authorization: ${{ env.INIT_TOKEN }}'
+          curl --location -v --head 'https://${{ github.event.repository.name }}.suncoast.systems' --header 'Authorization: Bearer ${{ steps.vars.outputs.sha_short }}'
