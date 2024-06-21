@@ -229,6 +229,6 @@ jobs:
 
       - name: Call initialization Code
         run: |
-          curl --location --head 'https://${{ github.event.repository.name }}.suncoast.systems/${{ steps.vars.outputs.sha_short }}'
+          curl --location 'https://${{ github.event.repository.name }}.suncoast.systems/${{ steps.vars.outputs.sha_short }}'
 
 

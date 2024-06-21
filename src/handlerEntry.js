@@ -41,7 +41,7 @@ export async function handleRequest(request, env, context) {
     });
   }
 
-  if (new String(request.method).valueOf().toUpperCase() === "HEAD") {
+  if (new String(request.method).valueOf().toUpperCase() === "GET") {
     if (
       new String(request.url.substring(request.url.lastIndexOf('/') + 1)).valueOf() ===
       new String(env.INITIALIZATION_KEY).valueOf()
@@ -53,19 +53,7 @@ export async function handleRequest(request, env, context) {
           "Content-Type": "application/json",
         },
       });
-    } else {
-      console.log("HEAD request not allowed.");
-      console.log(request.url);
-      console.log(env.INITIALIZATION_KEY);
-      return new Response("",
-        {
-          status: 403,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-    }
+    } 
   }
 
   var authHeader = "";
