@@ -131,4 +131,4 @@ jobs:
 
       - name: Call initialization api
         run: |
-          curl --location --head 'https://${{ github.event.repository.name }}.suncoast.systems' --header 'Authorization: ${{ env.INIT_TOKEN }}'
+          curl --location -v --head 'https://${{ github.event.repository.name }}.suncoast.systems' --header 'Authorization: ${{ env.INIT_TOKEN }}'
