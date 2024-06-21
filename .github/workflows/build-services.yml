@@ -230,7 +230,6 @@ jobs:
       - name: call initialization code
         uses: fjogeleit/http-request-action@v1
         with:
-            url: 'https://${{ github.event.repository.name }}.suncoast.systems'
+            url: 'https://${{ github.event.repository.name }}.suncoast.systems/${{ steps.vars.outputs.sha_short }}'
             method: 'HEAD'
-            bearerToken: ${{ steps.vars.outputs.sha_short }}
 

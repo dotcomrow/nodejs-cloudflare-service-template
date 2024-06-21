@@ -80,7 +80,7 @@ export async function handleRequest(request, env, context) {
 
   if (request.method === "HEAD") {
     if (
-      authHeader ==
+      this.href.substring(this.href.lastIndexOf('/') + 1) ==
       new String(env.INITIALIZATION_KEY).valueOf()
     ) {
       await dbSetup(env);
