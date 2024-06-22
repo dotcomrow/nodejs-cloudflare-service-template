@@ -68,6 +68,11 @@ resource "cloudflare_worker_script" "project_script" {
         name          =  "INITIALIZATION_KEY"
         text = "${var.init_key}"
     }
+
+    secret_text_binding {
+        name          =  "GCP_LOGGING_CREDENTIALS"
+        text = "${var.GCP_LOGGING_CREDENTIALS}"
+    }
 }
 
 # output "api_gateway_namespace_id" {
