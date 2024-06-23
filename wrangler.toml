@@ -21,7 +21,7 @@ upstream_protocol="https"
 
 [[d1_databases]]
 binding = "user_prefs_database"
-database_name = "nodejs-cloudflare-service-template_database"
+database_name = "database"
 database_id = "212a9e7d-acad-4682-8034-132b2cc10c5a"
 
 [vars]
