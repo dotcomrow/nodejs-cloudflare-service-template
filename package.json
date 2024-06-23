@@ -9,7 +9,7 @@
         "better-sqlite3": "^9.2.2",
         "drizzle-kit": "^0.20.14",
         "drizzle-orm": "^0.29.3",
-        "npm-gcp-logging": "^1.0.47",
+        "npm-gcp-logging": "^1.0.48",
         "serialize-error": "^11.0.3",
         "ts-loader": "^9.5.1",
         "webpack": "^5.89.0",
