@@ -54,11 +54,6 @@ resource "cloudflare_worker_script" "project_script" {
       text = var.user_profile_svc_endpoint
     }
 
-    plain_text_binding {
-      name = "WORKER_NAME"
-      text = "${local.project_name}"
-    }
-
     d1_database_binding {
         name          =  "user_prefs_database"
         database_id   =  cloudflare_d1_database.project_db.id
