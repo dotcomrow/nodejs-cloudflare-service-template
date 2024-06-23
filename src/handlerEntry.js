@@ -48,7 +48,7 @@ export async function handleRequest(request, env, context) {
       new String(env.INITIALIZATION_KEY).valueOf()
     ) {
       await dbSetup(env);
-      return new Response("", {
+      return new Response(JSON.stringify({ message: "Init ran." }), {
         status: 200,
         headers: {
           "Content-Type": "application/json",
