@@ -8,12 +8,14 @@ export default {
       return await handleRequest(request, env, context);
     } catch (e) {
       const responseError = serializeError(e);
-      GCloudLogger.default.logEntry(env.GCP_LOGGING_PROJECT_ID, env.GCP_LOGGING_CREDENTIALS,env.LOG_NAME, 
+      await GCloudLogger.default.logEntry(env.GCP_LOGGING_PROJECT_ID, env.GCP_LOGGING_CREDENTIALS,env.LOG_NAME, 
         [
           {
             severity: "ERROR",
             // textPayload: message,
-            jsonPayload: responseError
+            jsonPayload: {
+              responseError
+            }
           },
         ]
       );
