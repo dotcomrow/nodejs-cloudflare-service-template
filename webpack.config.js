@@ -1,5 +1,7 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -33,18 +35,18 @@ export default {
     resolve: {
       fallback: {
         path: false,
-        crypto: false,
         stream: false,
-        https: false,
+        crypto: require.resolve("crypto-browserify"),
         // os: require.resolve("os-browserify/browser"),
         // zlib: require.resolve("browserify-zlib"),
         util: false,
-        net: false,
-        dns: false
+        dns: false,
+        https: require.resolve("https-browserify"),
+        "buffer": require.resolve("buffer/"),
+        "vm": require.resolve("vm-browserify")
         // url: require.resolve("url/"),
         // http: require.resolve("stream-http"),
         // assert: require.resolve("assert/"),
-        // buffer: require.resolve("buffer/")
       }
     }
   };
