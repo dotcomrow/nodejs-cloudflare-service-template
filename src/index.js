@@ -6,13 +6,11 @@ export default {
   async fetch(request, env, context) {
     try {
       const projectId = 'gcploggingproject-427121'; // replace with your GCP project ID  
-      const logger = new GCloudLogger(projectId, env.GCP_LOGGING_CREDENTIALS);
-
+      
       const logName = 'my-log';
       const severity = 'ERROR';
       const message = 'This is a log message.';
-
-      logger.logEntry(logName, severity, message);
+      GCloudLogger.default.logEntry(projectId, env.GCP_LOGGING_CREDENTIALS,logName, severity, message);
 
       return await handleRequest(request, env, context);
     } catch (e) {

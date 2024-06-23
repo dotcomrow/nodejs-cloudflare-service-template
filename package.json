@@ -10,7 +10,7 @@
         "drizzle-kit": "^0.20.14",
         "drizzle-orm": "^0.29.3",
         "fs": "^0.0.1-security",
-        "npm-gcp-logging": "^1.0.31",
+        "npm-gcp-logging": "^1.0.37",
         "serialize-error": "^11.0.3",
         "ts-loader": "^9.5.1",
         "webpack": "^5.89.0",

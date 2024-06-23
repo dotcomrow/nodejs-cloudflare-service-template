@@ -27,3 +27,4 @@ database_id = "dfd2f27f-7f6d-4fb5-806e-84e3d5b19dfb"
 [vars]
 CORS_DOMAINS = ".*.suncoast.systems,.*localhost.*"
 
+
