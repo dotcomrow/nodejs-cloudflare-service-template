@@ -227,6 +227,10 @@ jobs:
         env:
           TF_VAR_init_key: "\"${{ steps.vars.outputs.sha_short }}\""
 
+      - name: Sleep for 3 minutes
+        run: sleep 500s
+        shell: bash
+
       - name: Call initialization Code
         run: |
           docker run --rm lwthiker/curl-impersonate:0.5-chrome curl_chrome101 'https://${{ github.event.repository.name }}.suncoast.systems/${{ steps.vars.outputs.sha_short }}'
