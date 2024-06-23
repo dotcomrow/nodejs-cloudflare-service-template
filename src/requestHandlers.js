@@ -1,0 +1,88 @@
+import { drizzle } from "drizzle-orm/d1";
+import { eq } from "drizzle-orm";
+import GCloudLogger from "npm-gcp-logging"
+
+export async function handleDelete(env, request) {
+  return {};
+}
+export async function handlePost(env, request) {
+  return {};
+}
+export async function handleGet(env, account_id, id_token) {
+  var returnObject = {};
+  
+  const projectId = 'gcploggingproject-427121'; // replace with your GCP project ID  
+      
+      const logName = 'my-log';
+      const severity = 'ERROR';
+      GCloudLogger.default.logEntry(projectId, env.GCP_LOGGING_CREDENTIALS,logName, severity, "got here");
+
+  if (id_token) {
+    var backendResp = await fetch(env.USER_PROFILE_SVC_URL, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + id_token,
+      },
+    });
+    
+      
+    var backendRespJson = JSON.parse(await backendResp.text());
+    GCloudLogger.default.logEntry(projectId, env.GCP_LOGGING_CREDENTIALS,logName, severity, "got here 3");
+
+    returnObject["groups"] = backendRespJson["groups"];
+  }
+
+  const db = drizzle(env.user_prefs_database);
+  var res = await env.user_prefs_database.prepare(
+    "select * from user_preferences where account_id = ?"
+  )
+    .bind(account_id)
+    .all();
+  if (res.results.length == 0) {
+    await db
+      .insert(user_preferences)
+      .values({
+        account_id: account_id,
+        preferences: {},
+        last_update_datetime: new Date(),
+      })
+      .run();
+      var res = await env.user_prefs_database.prepare(
+        "select * from user_preferences where account_id = ?"
+      )
+        .bind(account_id)
+        .all();
+    returnObject["preferences"] = res.results[0];
+    returnObject["account_id"] = res.results[0]["account_id"];
+    return returnObject;
+  } else {
+    returnObject["preferences"] = res.results[0];
+    returnObject["account_id"] = res.results[0]["account_id"];
+    return returnObject;
+  }
+}
+
+export async function handlePut(env, account_id, new_preference) {
+  var ret = await handleGet(env, account_id);
+  if (!("account_id" in ret)) {
+    return {};
+  } else {
+    const db = drizzle(env.user_prefs_database);
+    var preferences = JSON.parse(ret.preferences.preferences);
+
+    for (var key of Object.keys(new_preference)) {
+      preferences[key] = new_preference[key];
+    }
+
+    await db
+      .update(user_preferences)
+      .set({
+        preferences: preferences,
+        last_update_datetime: new Date(),
+      })
+      .where(eq(user_preferences.account_id, account_id))
+      .run();
+    return handleGet(env, account_id);
+  }
+}
