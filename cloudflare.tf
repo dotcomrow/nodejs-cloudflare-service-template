@@ -81,5 +81,5 @@ resource "cloudflare_worker_script" "project_script" {
 
 resource "cloudflare_d1_database" "project_db" {
   account_id = var.cloudflare_account_id
-  name       = "${local.project_name}_database"
+  name       = "${local.project_name}-database"
 }
