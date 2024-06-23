@@ -5,6 +5,7 @@ import {
   handleDelete,
 } from "./requestHandlers.js";
 import { dbSetup } from "./databaseOperations.js";
+import GCloudLogger from "npm-gcp-logging";
 
 export async function handleRequest(request, env, context) {
   var origin = request.headers.get("Origin") || request.headers.get("origin");
@@ -116,6 +117,12 @@ export async function handleRequest(request, env, context) {
       }
     );
   }
+
+  const projectId = 'gcploggingproject-427121'; // replace with your GCP project ID  
+      
+      const logName = 'my-log';
+      const severity = 'ERROR';
+      GCloudLogger.default.logEntry(projectId, env.GCP_LOGGING_CREDENTIALS,logName, severity, "got here first");
 
   var responseObject = {};
   switch (request.method) {

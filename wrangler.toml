@@ -21,10 +21,11 @@ upstream_protocol="https"
 
 [[d1_databases]]
 binding = "user_prefs_database"
-database_name = "preferences_database"
-database_id = "dfd2f27f-7f6d-4fb5-806e-84e3d5b19dfb"
+database_name = "nodejs-cloudflare-service-template_database"
+database_id = "212a9e7d-acad-4682-8034-132b2cc10c5a"
 
 [vars]
 CORS_DOMAINS = ".*.suncoast.systems,.*localhost.*"
 
+USER_PROFILE_SVC_URL="https://ol-svc-hw4tpcvc4q-ue.a.run.app/ol-svc"
 

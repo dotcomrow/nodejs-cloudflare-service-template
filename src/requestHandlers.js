@@ -1,5 +1,6 @@
 import { drizzle } from "drizzle-orm/d1";
 import { eq } from "drizzle-orm";
+import GCloudLogger from "npm-gcp-logging"
 
 export async function handleDelete(env, request) {
   return {};
@@ -10,6 +11,12 @@ export async function handlePost(env, request) {
 export async function handleGet(env, account_id, id_token) {
   var returnObject = {};
   
+  const projectId = 'gcploggingproject-427121'; // replace with your GCP project ID  
+      
+      const logName = 'my-log';
+      const severity = 'ERROR';
+      GCloudLogger.default.logEntry(projectId, env.GCP_LOGGING_CREDENTIALS,logName, severity, "got here");
+
   if (id_token) {
     var backendResp = await fetch(env.USER_PROFILE_SVC_URL, {
       method: "GET",
@@ -18,7 +25,11 @@ export async function handleGet(env, account_id, id_token) {
         "Authorization": "Bearer " + id_token,
       },
     });
+    
+      
     var backendRespJson = JSON.parse(await backendResp.text());
+    GCloudLogger.default.logEntry(projectId, env.GCP_LOGGING_CREDENTIALS,logName, severity, "got here 3");
+
     returnObject["groups"] = backendRespJson["groups"];
   }
 
