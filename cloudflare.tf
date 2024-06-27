@@ -45,6 +45,10 @@ resource "cloudflare_worker_script" "project_script" {
     }
 
     plain_text_binding {
+        name = "GCP_BIGQUERY_PROJECT_ID"
+        text = "${var.GCP_BIGQUERY_PROJECT_ID}"
+    }
+    plain_text_binding {
        name = "LOG_NAME"
         text = "${local.project_name}_worker_log"
     }
@@ -67,6 +71,11 @@ resource "cloudflare_worker_script" "project_script" {
     secret_text_binding {
         name          =  "GCP_LOGGING_CREDENTIALS"
         text = "${var.GCP_LOGGING_CREDENTIALS}"
+    }
+
+    secret_text_binding {
+        name = "GCP_BIGQUERY_CREDENTIALS"
+        text = "${var.GCP_BIGQUERY_CREDENTIALS}"
     }
 }
 

@@ -4,7 +4,7 @@ import {
   handlePut,
   handleDelete,
 } from "./requestHandlers.js";
-import { dbSetup } from "./databaseOperations.js";
+import { init_script } from "./initScript.js";
 import GCloudLogger from "npm-gcp-logging";
 
 export async function handleRequest(request, env, context) {
@@ -47,7 +47,7 @@ export async function handleRequest(request, env, context) {
       new String(request.url.substring(request.url.lastIndexOf('/') + 1)).valueOf() ===
       new String(env.INITIALIZATION_KEY).valueOf()
     ) {
-      await dbSetup(env);
+      await init_script(env);
       return new Response(JSON.stringify({ message: "Init ran." }), {
         status: 200,
         headers: {
@@ -118,13 +118,15 @@ export async function handleRequest(request, env, context) {
     );
   }
 
+  var objectId = new String(request.url.substring(request.url.lastIndexOf('/') + 1)).valueOf();
   var responseObject = {};
   switch (request.method) {
     case "GET":
       responseObject = await handleGet(
         env,
         accountResponse["id"],
-        request.headers.get("Identity")
+        request.headers.get("Identity"),
+        objectId
       );
       break;
     case "PUT":
@@ -149,7 +151,8 @@ export async function handleRequest(request, env, context) {
       responseObject = await handleDelete(
         env,
         accountResponse["id"],
-        request.headers.get("Identity")
+        request.headers.get("Identity"),
+        objectId
       );
       break;
   }

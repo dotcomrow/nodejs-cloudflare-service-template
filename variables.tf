@@ -56,3 +56,15 @@ variable GCP_LOGGING_CREDENTIALS {
   type        = string
   nullable = false
 }
+
+variable GCP_BIGQUERY_PROJECT_ID {
+  description = "GCP bigquery project id"
+  type        = string
+  nullable = false
+}
+
+variable GCP_BIGQUERY_CREDENTIALS {
+  description = "GCP bigquery credentials"
+  type        = string
+  nullable = false
+}

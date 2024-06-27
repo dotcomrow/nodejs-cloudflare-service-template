@@ -1,14 +1,15 @@
 import { drizzle } from "drizzle-orm/d1";
 import { eq } from "drizzle-orm";
 import GCloudLogger from "npm-gcp-logging"
+import GCloudBigQuery from "npm-gcp-bigquery"
 
-export async function handleDelete(env, request) {
+export async function handleDelete(env, request, id_token) {
   return {};
 }
 export async function handlePost(env, request) {
   return {};
 }
-export async function handleGet(env, account_id, id_token) {
+export async function handleGet(env, account_id, id_token, url_key) {
   var returnObject = {};
   
   if (id_token) {
@@ -26,12 +27,20 @@ export async function handleGet(env, account_id, id_token) {
     returnObject["groups"] = backendRespJson["groups"];
   }
 
-  const db = drizzle(env.user_prefs_database);
-  var res = await env.user_prefs_database.prepare(
-    "select * from user_preferences where account_id = ?"
-  )
-    .bind(account_id)
-    .all();
+  var res = GCloudBigQuery.default.query(env.GCP_BIGQUERY_PROJECT_ID, env.GCP_BIGQUERY_CREDENTIALS, "select * from user_preferences where account_id = '" + account_id + "'");
+
+  await GCloudLogger.default.logEntry(env.GCP_LOGGING_PROJECT_ID, env.GCP_LOGGING_CREDENTIALS,env.LOG_NAME, 
+    [
+      {
+        severity: "ERROR",
+        // textPayload: message,
+        jsonPayload: {
+          res
+        }
+      },
+    ]
+  );
+
   if (res.results.length == 0) {
     await db
       .insert(user_preferences)
