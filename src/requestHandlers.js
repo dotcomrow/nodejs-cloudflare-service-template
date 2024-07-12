@@ -5,10 +5,10 @@ import { GCPBigquery } from "npm-gcp-bigquery"
 import { GCPAccessToken } from "npm-gcp-token";
 import { GCPUserInfo } from "npm-gcp-userinfo";
 
-export async function handleDelete(env, request, id_token) {
+export async function handleDelete(env, request) {
   return {};
 }
-export async function handlePost(env, account_id, request, id_token) {
+export async function handlePost(env, account_id, request) {
 
   var logging_token = new GCPAccessToken(env.GCP_LOGGING_CREDENTIALS).getAccessToken("https://www.googleapis.com/auth/logging.write");
   var bigquery_token = new GCPAccessToken(env.GCP_BIGQUERY_CREDENTIALS);
@@ -33,10 +33,9 @@ export async function handlePost(env, account_id, request, id_token) {
 
   return {};
 }
-export async function handleGet(env, account_id, id_token, url_key) {
+export async function handleGet(env, account_id, url_key) {
   var returnObject = {};
   
-  if (id_token) {
     var userinfo_token = new GCPAccessToken(env.GCP_USERINFO_CREDENTIALS).getAccessToken("https://www.googleapis.com/auth/admin.directory.group.readonly");
     var userinfo_response = await GCPUserInfo.getUserInfo((await userinfo_token).access_token, account_id, env.DOMAIN);
 
@@ -53,7 +52,6 @@ export async function handleGet(env, account_id, id_token, url_key) {
     var backendRespJson = JSON.parse(await backendResp.text()); */
     
     returnObject["groups"] = userinfo_response.groups;
-  }
 
   var bigquery_token = await new GCPAccessToken(env.GCP_BIGQUERY_CREDENTIALS).getAccessToken("https://www.googleapis.com/auth/bigquery");
 

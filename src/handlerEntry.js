@@ -125,7 +125,6 @@ export async function handleRequest(request, env, context) {
       responseObject = await handleGet(
         env,
         accountResponse["id"],
-        request.headers.get("Identity"),
         objectId
       );
       break;
@@ -134,8 +133,7 @@ export async function handleRequest(request, env, context) {
       responseObject = await handlePut(
         env,
         accountResponse["id"],
-        bodyObj,
-        request.headers.get("Identity")
+        bodyObj
       );
       break;
     case "POST":
@@ -143,15 +141,13 @@ export async function handleRequest(request, env, context) {
       responseObject = await handlePost(
         env,
         accountResponse["id"],
-        bodyObj,
-        request.headers.get("Identity")
+        bodyObj
       );
       break;
     case "DELETE":
       responseObject = await handleDelete(
         env,
         accountResponse["id"],
-        request.headers.get("Identity"),
         objectId
       );
       break;
