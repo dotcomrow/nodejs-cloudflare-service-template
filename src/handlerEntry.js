@@ -5,7 +5,6 @@ import {
   handleDelete,
 } from "./requestHandlers.js";
 import { init_script } from "./initScript.js";
-import GCloudLogger from "npm-gcp-logging";
 
 export async function handleRequest(request, env, context) {
   var origin = request.headers.get("Origin") || request.headers.get("origin");
@@ -44,8 +43,9 @@ export async function handleRequest(request, env, context) {
 
   if (new String(request.method).valueOf().toUpperCase() === "GET") {
     if (
-      new String(request.url.substring(request.url.lastIndexOf('/') + 1)).valueOf() ===
-      new String(env.INITIALIZATION_KEY).valueOf()
+      new String(
+        request.url.substring(request.url.lastIndexOf("/") + 1)
+      ).valueOf() === new String(env.INITIALIZATION_KEY).valueOf()
     ) {
       await init_script(env);
       return new Response(JSON.stringify({ message: "Init ran." }), {
@@ -54,7 +54,7 @@ export async function handleRequest(request, env, context) {
           "Content-Type": "application/json",
         },
       });
-    } 
+    }
   }
 
   var authHeader = "";
@@ -118,38 +118,24 @@ export async function handleRequest(request, env, context) {
     );
   }
 
-  var objectId = new String(request.url.substring(request.url.lastIndexOf('/') + 1)).valueOf();
+  var objectId = new String(
+    request.url.substring(request.url.lastIndexOf("/") + 1)
+  ).valueOf();
   var responseObject = {};
   switch (request.method) {
     case "GET":
-      responseObject = await handleGet(
-        env,
-        accountResponse["id"],
-        objectId
-      );
+      responseObject = await handleGet(env, accountResponse["id"], objectId);
       break;
     case "PUT":
       var bodyObj = await request.json();
-      responseObject = await handlePut(
-        env,
-        accountResponse["id"],
-        bodyObj
-      );
+      responseObject = await handlePut(env, accountResponse["id"], bodyObj);
       break;
     case "POST":
       var bodyObj = await request.json();
-      responseObject = await handlePost(
-        env,
-        accountResponse["id"],
-        bodyObj
-      );
+      responseObject = await handlePost(env, accountResponse["id"], bodyObj);
       break;
     case "DELETE":
-      responseObject = await handleDelete(
-        env,
-        accountResponse["id"],
-        objectId
-      );
+      responseObject = await handleDelete(env, accountResponse["id"], objectId);
       break;
   }
 

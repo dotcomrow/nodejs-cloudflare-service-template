@@ -1,7 +1,7 @@
 import { drizzle } from "drizzle-orm/d1";
 import { eq } from "drizzle-orm";
-import { GCPLogger } from "npm-gcp-logging"
-import { GCPBigquery } from "npm-gcp-bigquery"
+import { GCPLogger } from "npm-gcp-logging";
+import { GCPBigquery } from "npm-gcp-bigquery";
 import { GCPAccessToken } from "npm-gcp-token";
 import { GCPUserInfo } from "npm-gcp-userinfo";
 
@@ -9,38 +9,60 @@ export async function handleDelete(env, request) {
   return {};
 }
 export async function handlePost(env, account_id, request) {
-
-  var logging_token = new GCPAccessToken(env.GCP_LOGGING_CREDENTIALS).getAccessToken("https://www.googleapis.com/auth/logging.write");
+  var logging_token = new GCPAccessToken(
+    env.GCP_LOGGING_CREDENTIALS
+  ).getAccessToken("https://www.googleapis.com/auth/logging.write");
   var bigquery_token = new GCPAccessToken(env.GCP_BIGQUERY_CREDENTIALS);
 
-  var sql = `insert into database_dataset.user_preferences (account_id, preferences, created_at, updated_at) 
-              values ('` + account_id + `', PARSE_JSON('` + JSON.stringify(request) + `'), 
+  var sql =
+    `insert into database_dataset.user_preferences (account_id, preferences, created_at, updated_at) 
+              values ('` +
+    account_id +
+    `', PARSE_JSON('` +
+    JSON.stringify(request) +
+    `'), 
               CURRENT_TIMESTAMP(), 
               CURRENT_TIMESTAMP())`;
 
-  await GCPLogger.logEntry(env.GCP_LOGGING_PROJECT_ID, logging_token ,env.LOG_NAME, 
+  await GCPLogger.logEntry(
+    env.GCP_LOGGING_PROJECT_ID,
+    logging_token,
+    env.LOG_NAME,
     [
       {
         severity: "INFO",
         // textPayload: message,
         jsonPayload: {
-          sql_text :  sql
-        }
+          sql_text: sql,
+        },
       },
     ]
   );
-  var res = await GCPBigquery.query(env.GCP_BIGQUERY_PROJECT_ID, bigquery_token, sql);
+  var res = await GCPBigquery.query(
+    env.GCP_BIGQUERY_PROJECT_ID,
+    bigquery_token,
+    sql
+  );
 
   return {};
 }
 export async function handleGet(env, account_id, url_key) {
   var returnObject = {};
-  
-    var userinfo_token = new GCPAccessToken(env.GCP_USERINFO_CREDENTIALS).getAccessToken("https://www.googleapis.com/auth/admin.directory.group.readonly");
-    var userinfo_response = await GCPUserInfo.getUserInfo((await userinfo_token).access_token, account_id, env.DOMAIN);
 
+  var userinfo_token = new GCPAccessToken(
+    env.GCP_USERINFO_CREDENTIALS
+  ).getAccessToken(
+    "https://www.googleapis.com/auth/admin.directory.group.readonly"
+  );
+  var userinfo_response = await GCPUserInfo.getUserInfo(
+    (
+      await userinfo_token
+    ).access_token,
+    account_id,
+    env.DOMAIN
+  );
 
-    /* var backendResp = await fetch(env.USER_PROFILE_SVC_URL, {
+  /* var backendResp = await fetch(env.USER_PROFILE_SVC_URL, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -50,15 +72,28 @@ export async function handleGet(env, account_id, url_key) {
     
       
     var backendRespJson = JSON.parse(await backendResp.text()); */
-    
-    returnObject["groups"] = userinfo_response.groups;
 
-  var bigquery_token = await new GCPAccessToken(env.GCP_BIGQUERY_CREDENTIALS).getAccessToken("https://www.googleapis.com/auth/bigquery");
+  returnObject["groups"] = userinfo_response.groups;
 
-  var res = await GCPBigquery.query(env.GCP_BIGQUERY_PROJECT_ID, bigquery_token.access_token, "select format('[%s]', string_agg(to_json_string(p))) from database_dataset.user_preferences p where account_id = '" + account_id + "'");
+  var bigquery_token = await new GCPAccessToken(
+    env.GCP_BIGQUERY_CREDENTIALS
+  ).getAccessToken("https://www.googleapis.com/auth/bigquery");
+
+  var res = await GCPBigquery.query(
+    env.GCP_BIGQUERY_PROJECT_ID,
+    bigquery_token.access_token,
+    "select format('[%s]', string_agg(to_json_string(p))) from database_dataset.user_preferences p where account_id = '" +
+      account_id +
+      "'"
+  );
   if (!res.rows) {
-    var res = await GCPBigquery.query(env.GCP_BIGQUERY_PROJECT_ID, bigquery_token.access_token, 
-      "insert into database_dataset.user_preferences (account_id, preferences, created_at, updated_at) values ('" + account_id + "', JSON '{}', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())");
+    var res = await GCPBigquery.query(
+      env.GCP_BIGQUERY_PROJECT_ID,
+      bigquery_token.access_token,
+      "insert into database_dataset.user_preferences (account_id, preferences, created_at, updated_at) values ('" +
+        account_id +
+        "', JSON '{}', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())"
+    );
 
     returnObject["preferences"] = {};
     returnObject["account_id"] = account_id;
