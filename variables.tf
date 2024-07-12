@@ -63,3 +63,9 @@ variable GCP_BIGQUERY_CREDENTIALS {
   type        = string
   nullable = false
 }
+
+variable GCP_USERINFO_CREDENTIALS {
+  description = "GCP UserInfo credentials"
+  type = string
+  nullable = false
+}

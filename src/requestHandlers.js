@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 import { GCPLogger } from "npm-gcp-logging"
 import { GCPBigquery } from "npm-gcp-bigquery"
 import { GCPAccessToken } from "npm-gcp-token";
+import { GCPUserInfo } from "npm-gcp-userinfo";
 
 export async function handleDelete(env, request, id_token) {
   return {};
@@ -36,7 +37,11 @@ export async function handleGet(env, account_id, id_token, url_key) {
   var returnObject = {};
   
   if (id_token) {
-    var backendResp = await fetch(env.USER_PROFILE_SVC_URL, {
+    var userinfo_token = new GCPAccessToken(env.GCP_USERINFO_CREDENTIALS).getAccessToken("https://www.googleapis.com/auth/admin.directory.group.readonly");
+    var userinfo_response = await GCPUserInfo.getUserInfo((await userinfo_token).access_token, account_id, env.DOMAIN);
+
+
+    /* var backendResp = await fetch(env.USER_PROFILE_SVC_URL, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -45,9 +50,9 @@ export async function handleGet(env, account_id, id_token, url_key) {
     });
     
       
-    var backendRespJson = JSON.parse(await backendResp.text());
+    var backendRespJson = JSON.parse(await backendResp.text()); */
     
-    returnObject["groups"] = backendRespJson["groups"];
+    returnObject["groups"] = userinfo_response.groups;
   }
 
   var bigquery_token = await new GCPAccessToken(env.GCP_BIGQUERY_CREDENTIALS).getAccessToken("https://www.googleapis.com/auth/bigquery");

@@ -12,6 +12,7 @@
         "npm-gcp-logging": "^1.0.53",
         "npm-gcp-bigquery": "^1.0.12",
         "npm-gcp-token": "^1.0.12",
+        "npm-gcp-userinfo": "^1.0.1",
         "serialize-error": "^11.0.3",
         "ts-loader": "^9.5.1",
         "webpack": "^5.89.0",
@@ -27,7 +28,8 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "webpack  --config webpack.config.js"
+        "build": "webpack  --config webpack.config.js",
+        "start": "npx wrangler dev"
     },
     "dependencies": {
         "@types/node": "^20.14.8"
