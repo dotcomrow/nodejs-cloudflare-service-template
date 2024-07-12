@@ -63,10 +63,10 @@ resource "cloudflare_worker_script" "project_script" {
       text = var.user_profile_svc_endpoint
     }
 
-    d1_database_binding {
-        name          =  "user_prefs_database"
-        database_id   =  cloudflare_d1_database.project_db.id
-    }
+    # d1_database_binding {
+    #     name          =  "user_prefs_database"
+    #     database_id   =  cloudflare_d1_database.project_db.id
+    # }
 
     secret_text_binding {
         name          =  "INITIALIZATION_KEY"
@@ -93,7 +93,7 @@ resource "cloudflare_worker_script" "project_script" {
 #   value = cloudflare_workers_kv_namespace.mapping.id
 # }
 
-resource "cloudflare_d1_database" "project_db" {
-  account_id = var.cloudflare_account_id
-  name       = "database"
-}
+# resource "cloudflare_d1_database" "project_db" {
+#   account_id = var.cloudflare_account_id
+#   name       = "database"
+# }
