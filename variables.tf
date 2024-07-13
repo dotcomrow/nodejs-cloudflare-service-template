@@ -16,12 +16,6 @@ variable "cloudflare_zone_id" {
   nullable = false
 }
 
-variable "user_profile_svc_endpoint" {
-  description = "user profile svc url"
-  type        = string
-  nullable = false
-}
-
 variable "cloudflare_token" {
   description = "cloudflare token"
   type        = string
