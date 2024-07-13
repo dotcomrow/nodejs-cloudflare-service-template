@@ -62,17 +62,6 @@ export async function handleGet(env, account_id, url_key) {
     env.DOMAIN
   );
 
-  /* var backendResp = await fetch(env.USER_PROFILE_SVC_URL, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + id_token,
-      },
-    });
-    
-      
-    var backendRespJson = JSON.parse(await backendResp.text()); */
-
   returnObject["groups"] = userinfo_response.groups;
 
   var bigquery_token = await new GCPAccessToken(
