@@ -200,7 +200,7 @@ jobs:
       - name: Call initialization Code
         run: |
           docker run --rm lwthiker/curl-impersonate:0.5-chrome curl_chrome101 'https://${{ github.event.repository.name }}.suncoast.systems/${{ steps.vars.outputs.sha_short }}' > output.txt
-          while [[ -z `cat output.txt | jq -r '.message // empty'` ]]; do
+          while [ -z `cat output.txt | jq -r '.message // empty'` ]; do
               sleep 10 # throttle the check
               docker run --rm lwthiker/curl-impersonate:0.5-chrome curl_chrome101 'https://${{ github.event.repository.name }}.suncoast.systems/${{ steps.vars.outputs.sha_short }}' > output.txt
           done
