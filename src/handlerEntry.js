@@ -4,7 +4,6 @@ import {
   handlePut,
   handleDelete,
 } from "./requestHandlers.js";
-import { init_script } from "./initScript.js";
 
 export async function handleRequest(request, env, context) {
   var origin = request.headers.get("Origin") || request.headers.get("origin");
@@ -39,22 +38,6 @@ export async function handleRequest(request, env, context) {
         Connection: request.headers.get("Connection"),
       },
     });
-  }
-
-  if (new String(request.method).valueOf().toUpperCase() === "GET") {
-    if (
-      new String(
-        request.url.substring(request.url.lastIndexOf("/") + 1)
-      ).valueOf() === new String(env.INITIALIZATION_KEY).valueOf()
-    ) {
-      await init_script(env);
-      return new Response(JSON.stringify({ message: "Init ran." }), {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-    }
   }
 
   var authHeader = "";
