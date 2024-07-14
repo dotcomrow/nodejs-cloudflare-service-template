@@ -64,12 +64,6 @@ jobs:
           git commit -m "Release ${{ steps.version.outputs.version }}"
           git push
 
-      - name: Set outputs
-        id: vars
-        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-      - name: Check outputs
-        run: echo ${{ steps.vars.outputs.sha_short }}
-
       - name: Create release
         uses: "actions/github-script@v6"
         env:
@@ -124,36 +118,6 @@ jobs:
               "data": {
                 "type":"vars",
                 "attributes": {
-                  "key":"init_key",
-                  "value":"default",
-                  "description":"initialization key",
-                  "category":"terraform",
-                  "hcl":false,
-                  "sensitive":true
-                },
-                "relationships": {
-                  "workspace": {
-                    "data": {
-                      "id":"${{ steps.create_workspace.outputs.workspace_id }}",
-                      "type":"workspaces"
-                    }
-                  }
-                }
-              }
-            }
-            EOF
-            curl \
-            --header "Authorization: Bearer ${{ secrets.TFE_TOKEN }}" \
-            --header "Content-Type: application/vnd.api+json" \
-            --request POST \
-            --data @payload.json \
-            https://app.terraform.io/api/v2/vars
-
-            cat > payload.json <<EOF
-            {
-              "data": {
-                "type":"vars",
-                "attributes": {
                   "key":"project_name",
                   "value":"${{ github.event.repository.name }}",
                   "description":"project name",
@@ -194,5 +158,3 @@ jobs:
           workspace: ${{ github.event.repository.name }}
           configuration_version: ${{ steps.upload.outputs.configuration_version_id }}
           plan_only: false
-        env:
-          TF_VAR_init_key: "\"${{ steps.vars.outputs.sha_short }}\""

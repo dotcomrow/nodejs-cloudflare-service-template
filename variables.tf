@@ -22,12 +22,6 @@ variable "cloudflare_token" {
   nullable = false
 }
 
-variable init_key {
-  description = "initialization key"
-  type        = string
-  nullable = false
-}
-
 variable project_name {
   description = "project name"
   type        = string
