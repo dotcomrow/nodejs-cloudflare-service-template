@@ -73,23 +73,8 @@ export async function handlePut(env, account_id, new_preference) {
       account_id +
       "'"
   );
-  if (!res.rows[0].f[0].v) {
+  if (res.rows[0].f[0].v) {
     var obj = JSON.parse(res.rows[0].f[0].v);
-
-    await GCPLogger.logEntry(
-      env.GCP_LOGGING_PROJECT_ID,
-      logging_token.access_token,
-      env.LOG_NAME,
-      [
-        {
-          severity: "INFO",
-          // textPayload: message,
-          jsonPayload: {
-            obj
-          },
-        },
-      ]
-    );
 
     for (var key of Object.keys(new_preference)) {
       obj.preferences[key] = new_preference[key];
