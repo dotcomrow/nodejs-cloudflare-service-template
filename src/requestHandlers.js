@@ -64,19 +64,26 @@ export async function handleGet(env, account_id, url_key) {
 }
 
 export async function handlePut(env, account_id, new_preference) {
-  var ret = await handleGet(env, account_id);
-  if (!("account_id" in ret)) {
-    return {};
-  } else {
+  var bigquery_token = await new GCPAccessToken(
+    env.GCP_BIGQUERY_CREDENTIALS
+  ).getAccessToken("https://www.googleapis.com/auth/bigquery");
+
+  var res = await GCPBigquery.query(
+    env.GCP_BIGQUERY_PROJECT_ID,
+    bigquery_token.access_token,
+    "select format('[%s]', string_agg(to_json_string(p))) from database_dataset.user_preferences p where account_id = '" +
+      account_id +
+      "'"
+  );
+  if (!res.rows[0].f[0].v) {
     
+    var obj = JSON.parse(res.rows[0].f[0].v);
+
     for (var key of Object.keys(new_preference)) {
-      ret.preferences[key] = new_preference[key];
+      obj.preferences[key] = new_preference[key];
     }
 
-    var bigquery_token = await new GCPAccessToken(
-      env.GCP_BIGQUERY_CREDENTIALS
-    ).getAccessToken("https://www.googleapis.com/auth/bigquery");
-
+    
     var res = await GCPBigquery.query(
       env.GCP_BIGQUERY_PROJECT_ID,
       bigquery_token.access_token,
@@ -88,7 +95,7 @@ export async function handlePut(env, account_id, new_preference) {
     );
 
     if (res.dmlStats.updatedRowCount > 0) {
-      return handleGet(env, account_id);
+      return obj.preferences;
     } else {
       return {
         error: "Failed to update user preferences"
