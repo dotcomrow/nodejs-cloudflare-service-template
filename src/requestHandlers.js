@@ -87,7 +87,7 @@ export async function handlePut(env, account_id, new_preference) {
         "'"
     );
 
-    if (res.totalRows > 0) {
+    if (res.dmlStats.updatedRowCount > 0) {
       return handleGet(env, account_id);
     } else {
       return {
