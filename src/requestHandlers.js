@@ -65,7 +65,7 @@ export async function handleGet(env, account_id, url_key) {
   if (userinfo_response) {
     returnObject["groups"] = userinfo_response.groups;
   }
-  
+
   var bigquery_token = await new GCPAccessToken(
     env.GCP_BIGQUERY_CREDENTIALS
   ).getAccessToken("https://www.googleapis.com/auth/bigquery");
@@ -77,7 +77,7 @@ export async function handleGet(env, account_id, url_key) {
       account_id +
       "'"
   );
-  if (!res.rows) {
+  if (!res.rows[0].f[0].v) {
     var res = await GCPBigquery.query(
       env.GCP_BIGQUERY_PROJECT_ID,
       bigquery_token.access_token,
