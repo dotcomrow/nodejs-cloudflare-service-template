@@ -77,7 +77,7 @@ export async function handlePut(env, account_id, new_preference) {
     var obj = JSON.parse(res.rows[0].f[0].v);
 
     for (var key of Object.keys(new_preference)) {
-      obj.preferences[key] = new_preference[key];
+      obj[0].preferences[key] = new_preference[key];
     }
     
     var res = await GCPBigquery.query(
