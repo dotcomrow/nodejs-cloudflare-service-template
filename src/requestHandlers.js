@@ -84,7 +84,7 @@ export async function handlePut(env, account_id, new_preference) {
       env.GCP_BIGQUERY_PROJECT_ID,
       bigquery_token.access_token,
       "update database_dataset.user_preferences set preferences = JSON '" +
-        JSON.stringify(ret.preferences) +
+        JSON.stringify(obj[0].preferences) +
         "', updated_at = CURRENT_TIMESTAMP() where account_id = '" +
         ret.account_id +
         "'"
