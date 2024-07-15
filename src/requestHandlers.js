@@ -86,6 +86,13 @@ export async function handlePut(env, account_id, new_preference) {
         ret.account_id +
         "'"
     );
-    return handleGet(env, account_id);
+
+    if (res.totalRows > 0) {
+      return handleGet(env, account_id);
+    } else {
+      return {
+        error: "Failed to update user preferences"
+      };
+    }
   }
 }
