@@ -86,7 +86,7 @@ export async function handlePut(env, account_id, new_preference) {
       "update database_dataset.user_preferences set preferences = JSON '" +
         JSON.stringify(obj[0].preferences) +
         "', updated_at = CURRENT_TIMESTAMP() where account_id = '" +
-        ret.account_id +
+        account_id +
         "'"
     );
 
