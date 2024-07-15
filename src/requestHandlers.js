@@ -9,43 +9,9 @@ export async function handleDelete(env, request) {
   return {};
 }
 export async function handlePost(env, account_id, request) {
-  var logging_token = new GCPAccessToken(
-    env.GCP_LOGGING_CREDENTIALS
-  ).getAccessToken("https://www.googleapis.com/auth/logging.write");
-  var bigquery_token = new GCPAccessToken(env.GCP_BIGQUERY_CREDENTIALS);
-
-  var sql =
-    `insert into database_dataset.user_preferences (account_id, preferences, created_at, updated_at) 
-              values ('` +
-    account_id +
-    `', PARSE_JSON('` +
-    JSON.stringify(request) +
-    `'), 
-              CURRENT_TIMESTAMP(), 
-              CURRENT_TIMESTAMP())`;
-
-  await GCPLogger.logEntry(
-    env.GCP_LOGGING_PROJECT_ID,
-    logging_token,
-    env.LOG_NAME,
-    [
-      {
-        severity: "INFO",
-        // textPayload: message,
-        jsonPayload: {
-          sql_text: sql,
-        },
-      },
-    ]
-  );
-  var res = await GCPBigquery.query(
-    env.GCP_BIGQUERY_PROJECT_ID,
-    bigquery_token,
-    sql
-  );
-
   return {};
 }
+
 export async function handleGet(env, account_id, url_key) {
   var returnObject = {};
 
@@ -102,21 +68,24 @@ export async function handlePut(env, account_id, new_preference) {
   if (!("account_id" in ret)) {
     return {};
   } else {
-    const db = drizzle(env.user_prefs_database);
-    var preferences = JSON.parse(ret.preferences.preferences);
-
+    
     for (var key of Object.keys(new_preference)) {
-      preferences[key] = new_preference[key];
+      ret.preferences[key] = new_preference[key];
     }
 
-    await db
-      .update(user_preferences)
-      .set({
-        preferences: preferences,
-        last_update_datetime: new Date(),
-      })
-      .where(eq(user_preferences.account_id, account_id))
-      .run();
+    var bigquery_token = await new GCPAccessToken(
+      env.GCP_BIGQUERY_CREDENTIALS
+    ).getAccessToken("https://www.googleapis.com/auth/bigquery");
+
+    var res = await GCPBigquery.query(
+      env.GCP_BIGQUERY_PROJECT_ID,
+      bigquery_token.access_token,
+      "update database_dataset.user_preferences set preferences = JSON '" +
+        JSON.stringify([ret.preferences]) +
+        "', updated_at = CURRENT_TIMESTAMP() where account_id = '" +
+        ret.account_id +
+        "'"
+    );
     return handleGet(env, account_id);
   }
 }
