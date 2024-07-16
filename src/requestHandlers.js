@@ -1,4 +1,3 @@
-import { GCPLogger } from "npm-gcp-logging";
 import { GCPBigquery } from "npm-gcp-bigquery";
 import { GCPAccessToken } from "npm-gcp-token";
 import { GCPUserInfo } from "npm-gcp-userinfo";
