@@ -27,7 +27,15 @@ export async function handleGet(env, account_id, url_key) {
   );
 
   if (userinfo_response) {
-    returnObject["groups"] = userinfo_response.groups;
+    // filter preferences data from response
+    var groups_return = [];
+    for (var obj of userinfo_response.groups) {
+      groups_return.push({
+        email: obj.email,
+        description: obj.description
+      });
+    }
+    returnObject["groups"] = groups_return;
   }
 
   var bigquery_token = await new GCPAccessToken(
@@ -55,17 +63,7 @@ export async function handleGet(env, account_id, url_key) {
     return returnObject;
   } else {
     var obj = JSON.parse(res.rows[0].f[0].v);
-
-    // filter preferences data from response
-    var pref_return = [];
-    for (var key of Object.keys(obj[0].preferences)) {
-      pref_return.push({
-        email: obj[0].preferences[key].email,
-        description: obj[0].preferences[key].description
-      });
-    }
-
-    returnObject["preferences"] = pref_return;
+    returnObject["preferences"] = obj[0].preferences;
     returnObject["account_id"] = obj[0].account_id;
     return returnObject;
   }
