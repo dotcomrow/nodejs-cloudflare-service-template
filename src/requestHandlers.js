@@ -27,7 +27,7 @@ export async function handleGet(env, account_id, url_key) {
   );
 
   if (userinfo_response) {
-    // filter preferences data from response
+    // filter group data from response
     var groups_return = [];
     for (var obj of userinfo_response.groups) {
       groups_return.push({
