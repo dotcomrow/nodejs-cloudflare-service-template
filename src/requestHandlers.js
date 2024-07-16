@@ -65,7 +65,7 @@ export async function handleGet(env, account_id, url_key) {
       });
     }
 
-    returnObject["preferences"] = obj[0].preferences;
+    returnObject["preferences"] = pref_return;
     returnObject["account_id"] = obj[0].account_id;
     return returnObject;
   }
