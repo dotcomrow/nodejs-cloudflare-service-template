@@ -60,12 +60,12 @@ export async function handleGet(env, account_id, query, itemId) {
     );
 
     var publicKey = await crypto.subtle.exportKey(
-      "spki", 
+      "jwk", 
       keypair.publicKey 
     ); 
 
     var privateKey = await crypto.subtle.exportKey(
-      "spki", 
+      "jwk", 
       keypair.privateKey 
     ); 
 
