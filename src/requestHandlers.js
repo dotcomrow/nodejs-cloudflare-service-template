@@ -89,6 +89,7 @@ export async function handleGet(env, account_id, query, itemId) {
     var obj = JSON.parse(res.rows[0].f[0].v);
     obj[0].preferences.privateKey = null;
     delete obj[0].preferences.privateKey;
+    console.log(obj);
     returnObject["preferences"] = obj[0].preferences;
     returnObject["account_id"] = obj[0].account_id;
     returnObject["apiToken"] = await generateApiToken(obj[0].publicKey);
