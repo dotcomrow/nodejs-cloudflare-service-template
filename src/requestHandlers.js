@@ -52,11 +52,13 @@ export async function handleGet(env, account_id, query, itemId) {
     var initial_prefs = {};
     var keypair = await crypto.subtle.generateKey(
       {
-          name: "ECDSA",
-          namedCurve: "P-256", // secp256r1 
+        name: "RSA-OAEP",
+        modulusLength: 4096,
+        publicExponent: new Uint8Array([1, 0, 1]),
+        hash: "SHA-256",
       },
       true,
-      ["sign", "verify"] 
+      ["encrypt", "decrypt"],
     );
 
     var publicKey = await crypto.subtle.exportKey(
@@ -144,21 +146,31 @@ async function generateApiToken(env, publicKey) {
     "jwk",
     publicKey,
     {
-      name: "ECDSA",
-      namedCurve: "P-256", // secp256r1
+      name: "RSA-OAEP",
+      modulusLength: 4096,
+      publicExponent: new Uint8Array([1, 0, 1]),
+      hash: "SHA-256",
     },
     true,
-    []
+    ["encrypt"],
   );
-  console.log(pk);
-  return new Promise((resolve, reject) => {
-    var token = crypto.subtle.sign(
-      "ECDSA",
-      {
-        publicKey: pk
-      },
-      env.GLOBAL_SHARED_SECRET
+  var token = await crypto.subtle.encrypt(
+    {
+      name: "RSA-OAEP",
+    },
+      pk,
+      new ArrayBuffer(env.GLOBAL_SHARED_SECRET)
     );
-    resolve(token);
-  });
+    console.log(arrayBufferToBase64(token));
+  return arrayBufferToBase64(token);
+}
+
+function arrayBufferToBase64( buffer ) {
+  var binary = '';
+  var bytes = new Uint8Array( buffer );
+  var len = bytes.byteLength;
+  for (var i = 0; i < len; i++) {
+      binary += String.fromCharCode( bytes[ i ] );
+  }
+  return btoa( binary );
 }
