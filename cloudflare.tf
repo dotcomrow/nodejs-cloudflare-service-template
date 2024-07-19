@@ -30,6 +30,11 @@ resource "cloudflare_worker_script" "project_script" {
   }
 
   plain_text_binding {
+    name = "DOMAIN"
+    text = var.domain
+  }
+
+  plain_text_binding {
     name = "GCP_LOGGING_PROJECT_ID"
     text = var.GCP_LOGGING_PROJECT_ID
   }
