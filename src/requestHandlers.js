@@ -139,12 +139,22 @@ export async function handlePut(env, account_id, body) {
   }
 }
 
-function generateApiToken(publicKey) {
+async function generateApiToken(publicKey) {
+  var pk = await crypto.subtle.importKey(
+    "jwk",
+    publicKey,
+    {
+      name: "ECDSA",
+      namedCurve: "P-256", // secp256r1
+    },
+    true,
+    ["sign"]
+  );
   return new Promise((resolve, reject) => {
     var token = crypto.subtle.sign(
       "ECDSA",
       {
-        publicKey: publicKey
+        publicKey: pk
       },
       new Date().getTime().toString()
     );
