@@ -79,7 +79,9 @@ export async function handleGet(env, account_id, query, itemId) {
         "', JSON '" + JSON.stringify(initial_prefs) + "', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())"
     );
 
-    returnObject["preferences"] = {};
+    returnObject["preferences"] = {
+      publicKey: publicKey
+    };
     returnObject["account_id"] = account_id;
     return returnObject;
   } else {
