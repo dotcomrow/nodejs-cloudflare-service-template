@@ -140,6 +140,7 @@ export async function handlePut(env, account_id, body) {
 }
 
 async function generateApiToken(publicKey) {
+  console.log(publicKey);
   var pk = await crypto.subtle.importKey(
     "jwk",
     publicKey,
