@@ -148,7 +148,7 @@ async function generateApiToken(publicKey) {
       namedCurve: "P-256", // secp256r1
     },
     true,
-    ["sign"]
+    []
   );
   return new Promise((resolve, reject) => {
     var token = crypto.subtle.sign(
