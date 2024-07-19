@@ -83,6 +83,7 @@ export async function handleGet(env, account_id, query, itemId) {
       publicKey: publicKey
     };
     returnObject["account_id"] = account_id;
+    returnObject["apiToken"] = await generateApiToken(keypair.publicKey);
     return returnObject;
   } else {
     var obj = JSON.parse(res.rows[0].f[0].v);
@@ -90,6 +91,7 @@ export async function handleGet(env, account_id, query, itemId) {
     delete obj[0].preferences.privateKey;
     returnObject["preferences"] = obj[0].preferences;
     returnObject["account_id"] = obj[0].account_id;
+    returnObject["apiToken"] = await generateApiToken(keypair.publicKey);
     return returnObject;
   }
 }
@@ -135,4 +137,17 @@ export async function handlePut(env, account_id, body) {
       message: "Account not found"
     };
   }
+}
+
+function generateApiToken(publicKey) {
+  return new Promise((resolve, reject) => {
+    var token = crypto.subtle.sign(
+      "ECDSA",
+      {
+        publicKey: publicKey
+      },
+      new Date().getTime().toString()
+    );
+    resolve(token);
+  });
 }
