@@ -86,6 +86,30 @@ export async function handlePut(env, account_id, body) {
     for (var key of Object.keys(body)) {
       obj[0].preferences[key] = body[key];
     }
+
+    if (!obj[0].preferences['publicKey']) {
+      var keypair = await crypto.subtle.generateKey(
+        {
+            name: "ECDSA",
+            namedCurve: "P-256", // secp256r1 
+        },
+        false,
+        ["sign", "verify"] 
+      );
+
+      var publicKey = await crypto.subtle.exportKey(
+        "spki", 
+        keypair.publicKey 
+      ); 
+
+      var privateKey = await crypto.subtle.exportKey(
+        "spki", 
+        keypair.privateKey 
+      ); 
+
+      obj[0].preferences.publicKey = publicKey;
+      obj[0].preferences.privateKey = privateKey;
+    }
     
     var res = await GCPBigquery.query(
       env.GCP_BIGQUERY_PROJECT_ID,
