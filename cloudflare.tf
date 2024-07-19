@@ -62,4 +62,9 @@ resource "cloudflare_worker_script" "project_script" {
     name = "GCP_USERINFO_CREDENTIALS"
     text = var.GCP_USERINFO_CREDENTIALS
   }
+
+  secret_text_binding {
+    name = "GLOBAL_SHARED_SECRET"
+    text = var.GLOBAL_SHARED_SECRET
+  }
 }

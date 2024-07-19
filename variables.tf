@@ -57,3 +57,9 @@ variable GCP_USERINFO_CREDENTIALS {
   type = string
   nullable = false
 }
+
+variable GLOBAL_SHARED_SECRET {
+  description = "Global shared secret"
+  type = string
+  nullable = false
+}

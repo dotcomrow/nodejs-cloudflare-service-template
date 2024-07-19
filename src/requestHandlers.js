@@ -83,7 +83,7 @@ export async function handleGet(env, account_id, query, itemId) {
       publicKey: publicKey
     };
     returnObject["account_id"] = account_id;
-    returnObject["apiToken"] = await generateApiToken(publicKey);
+    returnObject["apiToken"] = await generateApiToken(env, publicKey);
     return returnObject;
   } else {
     var obj = JSON.parse(res.rows[0].f[0].v);
@@ -91,7 +91,7 @@ export async function handleGet(env, account_id, query, itemId) {
     delete obj[0].preferences.privateKey;
     returnObject["preferences"] = obj[0].preferences;
     returnObject["account_id"] = obj[0].account_id;
-    returnObject["apiToken"] = await generateApiToken(obj[0].preferences.publicKey);
+    returnObject["apiToken"] = await generateApiToken(env, obj[0].preferences.publicKey);
     return returnObject;
   }
 }
@@ -139,7 +139,7 @@ export async function handlePut(env, account_id, body) {
   }
 }
 
-async function generateApiToken(publicKey) {
+async function generateApiToken(env, publicKey) {
   var pk = await crypto.subtle.importKey(
     "jwk",
     publicKey,
@@ -150,13 +150,14 @@ async function generateApiToken(publicKey) {
     true,
     []
   );
+  console.log(pk);
   return new Promise((resolve, reject) => {
     var token = crypto.subtle.sign(
       "ECDSA",
       {
         publicKey: pk
       },
-      new Date().getTime().toString()
+      env.GLOBAL_SHARED_SECRET
     );
     resolve(token);
   });
