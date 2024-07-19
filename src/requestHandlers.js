@@ -84,6 +84,8 @@ export async function handleGet(env, account_id, query, itemId) {
     return returnObject;
   } else {
     var obj = JSON.parse(res.rows[0].f[0].v);
+    obj[0].preferences.privateKey = null;
+    delete obj[0].preferences.privateKey;
     returnObject["preferences"] = obj[0].preferences;
     returnObject["account_id"] = obj[0].account_id;
     return returnObject;
