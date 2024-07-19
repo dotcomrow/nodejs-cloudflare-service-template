@@ -89,10 +89,9 @@ export async function handleGet(env, account_id, query, itemId) {
     var obj = JSON.parse(res.rows[0].f[0].v);
     obj[0].preferences.privateKey = null;
     delete obj[0].preferences.privateKey;
-    console.log(obj);
     returnObject["preferences"] = obj[0].preferences;
     returnObject["account_id"] = obj[0].account_id;
-    returnObject["apiToken"] = await generateApiToken(obj[0].publicKey);
+    returnObject["apiToken"] = await generateApiToken(obj[0].preferences.publicKey);
     return returnObject;
   }
 }
@@ -141,7 +140,6 @@ export async function handlePut(env, account_id, body) {
 }
 
 async function generateApiToken(publicKey) {
-  console.log(publicKey);
   var pk = await crypto.subtle.importKey(
     "jwk",
     publicKey,
@@ -152,7 +150,6 @@ async function generateApiToken(publicKey) {
     true,
     ["sign"]
   );
-  console.log(pk);
   return new Promise((resolve, reject) => {
     var token = crypto.subtle.sign(
       "ECDSA",
