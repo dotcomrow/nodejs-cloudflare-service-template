@@ -101,13 +101,13 @@ export async function handleRequest(request, env, context) {
     );
   }
 
-  var objectId = new String(
-    request.url.substring(request.url.lastIndexOf("/") + 1)
-  ).valueOf();
+  const { search, itemId } = new URL(request.url)
+  var query = QueryStringToJSON(search);
+
   var responseObject = {};
   switch (request.method) {
     case "GET":
-      responseObject = await handleGet(env, accountResponse["id"], objectId);
+      responseObject = await handleGet(env, accountResponse["id"], query, itemId);
       break;
     case "PUT":
       var bodyObj = await request.json();
@@ -118,7 +118,7 @@ export async function handleRequest(request, env, context) {
       responseObject = await handlePost(env, accountResponse["id"], bodyObj);
       break;
     case "DELETE":
-      responseObject = await handleDelete(env, accountResponse["id"], objectId);
+      responseObject = await handleDelete(env, accountResponse["id"], query, itemId);
       break;
   }
 
@@ -126,4 +126,16 @@ export async function handleRequest(request, env, context) {
     status: 200,
     headers: responseHeaders,
   });
+}
+
+function QueryStringToJSON(query) {
+  var pairs = query.slice(1).split("&");
+
+  var result = {};
+  pairs.forEach(function (pair) {
+    pair = pair.split("=");
+    result[pair[0]] = decodeURIComponent(pair[1] || "");
+  });
+
+  return JSON.parse(JSON.stringify(result));
 }

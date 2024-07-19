@@ -17,11 +17,6 @@ resource "cloudflare_worker_route" "project_route" {
   script_name = cloudflare_worker_script.project_script.name
 }
 
-# resource "cloudflare_workers_kv_namespace" "mapping" {
-#   account_id = var.cloudflare_account_id
-#   title      = "${local.project_name}_mapping"
-# }
-
 resource "cloudflare_worker_script" "project_script" {
   account_id         = var.cloudflare_account_id
   name               = local.project_name
@@ -29,19 +24,9 @@ resource "cloudflare_worker_script" "project_script" {
   compatibility_date = "2023-08-28"
   module             = true
 
-  # kv_namespace_binding {
-  #     name         = "MAPPING"
-  #     namespace_id = cloudflare_workers_kv_namespace.mapping.id
-  # }
-
   plain_text_binding {
     name = "CORS_DOMAINS"
     text = ".*.${var.domain},.*localhost.*"
-  }
-
-  plain_text_binding {
-    name = "DOMAIN"
-    text = var.domain
   }
 
   plain_text_binding {
@@ -58,11 +43,6 @@ resource "cloudflare_worker_script" "project_script" {
     text = "${local.project_name}_worker_log"
   }
 
-  # d1_database_binding {
-  #     name          =  "user_prefs_database"
-  #     database_id   =  cloudflare_d1_database.project_db.id
-  # }
-
   secret_text_binding {
     name = "GCP_LOGGING_CREDENTIALS"
     text = var.GCP_LOGGING_CREDENTIALS
@@ -78,12 +58,3 @@ resource "cloudflare_worker_script" "project_script" {
     text = var.GCP_USERINFO_CREDENTIALS
   }
 }
-
-# output "api_gateway_namespace_id" {
-#   value = cloudflare_workers_kv_namespace.mapping.id
-# }
-
-# resource "cloudflare_d1_database" "project_db" {
-#   account_id = var.cloudflare_account_id
-#   name       = "database"
-# }

@@ -2,14 +2,14 @@ import { GCPBigquery } from "npm-gcp-bigquery";
 import { GCPAccessToken } from "npm-gcp-token";
 import { GCPUserInfo } from "npm-gcp-userinfo";
 
-export async function handleDelete(env, request) {
+export async function handleDelete(env, account_id, query, itemId) {
   return {};
 }
-export async function handlePost(env, account_id, request) {
+export async function handlePost(env, account_id, body) {
   return {};
 }
 
-export async function handleGet(env, account_id, url_key) {
+export async function handleGet(env, account_id, query, itemId) {
   var returnObject = {};
 
   var userinfo_token = new GCPAccessToken(
@@ -68,7 +68,7 @@ export async function handleGet(env, account_id, url_key) {
   }
 }
 
-export async function handlePut(env, account_id, new_preference) {
+export async function handlePut(env, account_id, body) {
   var bigquery_token = await new GCPAccessToken(
     env.GCP_BIGQUERY_CREDENTIALS
   ).getAccessToken("https://www.googleapis.com/auth/bigquery");
@@ -83,8 +83,8 @@ export async function handlePut(env, account_id, new_preference) {
   if (res.rows[0].f[0].v) {
     var obj = JSON.parse(res.rows[0].f[0].v);
 
-    for (var key of Object.keys(new_preference)) {
-      obj[0].preferences[key] = new_preference[key];
+    for (var key of Object.keys(body)) {
+      obj[0].preferences[key] = body[key];
     }
     
     var res = await GCPBigquery.query(
