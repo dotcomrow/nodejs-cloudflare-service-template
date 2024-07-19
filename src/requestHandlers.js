@@ -55,7 +55,7 @@ export async function handleGet(env, account_id, query, itemId) {
           name: "ECDSA",
           namedCurve: "P-256", // secp256r1 
       },
-      false,
+      true,
       ["sign", "verify"] 
     );
 
