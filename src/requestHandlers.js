@@ -150,6 +150,7 @@ async function generateApiToken(publicKey) {
     true,
     ["sign"]
   );
+  console.log(pk);
   return new Promise((resolve, reject) => {
     var token = crypto.subtle.sign(
       "ECDSA",
