@@ -161,7 +161,6 @@ async function generateApiToken(env, publicKey) {
       pk,
       new ArrayBuffer(env.GLOBAL_SHARED_SECRET)
     );
-    console.log(arrayBufferToBase64(token));
   return arrayBufferToBase64(token);
 }
 
