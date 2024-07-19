@@ -49,12 +49,34 @@ export async function handleGet(env, account_id, query, itemId) {
       "'"
   );
   if (!res.rows[0].f[0].v) {
+    var initial_prefs = {};
+    var keypair = await crypto.subtle.generateKey(
+      {
+          name: "ECDSA",
+          namedCurve: "P-256", // secp256r1 
+      },
+      false,
+      ["sign", "verify"] 
+    );
+
+    var publicKey = await crypto.subtle.exportKey(
+      "spki", 
+      keypair.publicKey 
+    ); 
+
+    var privateKey = await crypto.subtle.exportKey(
+      "spki", 
+      keypair.privateKey 
+    ); 
+
+    initial_prefs.publicKey = publicKey;
+    initial_prefs.privateKey = privateKey;
     var res = await GCPBigquery.query(
       env.GCP_BIGQUERY_PROJECT_ID,
       bigquery_token.access_token,
       "insert into database_dataset.user_preferences (account_id, preferences, created_at, updated_at) values ('" +
         account_id +
-        "', JSON '{}', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())"
+        "', JSON '" + JSON.stringify(initial_prefs) + "', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())"
     );
 
     returnObject["preferences"] = {};
@@ -85,30 +107,6 @@ export async function handlePut(env, account_id, body) {
 
     for (var key of Object.keys(body)) {
       obj[0].preferences[key] = body[key];
-    }
-
-    if (!obj[0].preferences['publicKey']) {
-      var keypair = await crypto.subtle.generateKey(
-        {
-            name: "ECDSA",
-            namedCurve: "P-256", // secp256r1 
-        },
-        false,
-        ["sign", "verify"] 
-      );
-
-      var publicKey = await crypto.subtle.exportKey(
-        "spki", 
-        keypair.publicKey 
-      ); 
-
-      var privateKey = await crypto.subtle.exportKey(
-        "spki", 
-        keypair.privateKey 
-      ); 
-
-      obj[0].preferences.publicKey = publicKey;
-      obj[0].preferences.privateKey = privateKey;
     }
     
     var res = await GCPBigquery.query(
