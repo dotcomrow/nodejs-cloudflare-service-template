@@ -91,7 +91,7 @@ export async function handleGet(env, account_id, query, itemId) {
     delete obj[0].preferences.privateKey;
     returnObject["preferences"] = obj[0].preferences;
     returnObject["account_id"] = obj[0].account_id;
-    returnObject["apiToken"] = await generateApiToken(publicKey);
+    returnObject["apiToken"] = await generateApiToken(obj[0].publicKey);
     return returnObject;
   }
 }
@@ -150,7 +150,6 @@ async function generateApiToken(publicKey) {
     true,
     ["sign"]
   );
-  console.log(pk);
   return new Promise((resolve, reject) => {
     var token = crypto.subtle.sign(
       "ECDSA",
