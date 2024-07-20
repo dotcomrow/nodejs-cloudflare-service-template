@@ -12,8 +12,6 @@ export async function handlePost(env, account_id, body) {
 export async function handleGet(env, account_id, query, itemId) {
   var returnObject = {};
 
-  
-
   var bigquery_token = await new GCPAccessToken(
     env.GCP_BIGQUERY_CREDENTIALS
   ).getAccessToken("https://www.googleapis.com/auth/bigquery");
