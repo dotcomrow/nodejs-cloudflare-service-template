@@ -2,14 +2,14 @@ import { GCPBigquery } from "npm-gcp-bigquery";
 import { GCPAccessToken } from "npm-gcp-token";
 
 
-export async function handleDelete(env, account_id, query, itemId) {
+export async function handleDelete(env, profile, query, itemId) {
   return {};
 }
-export async function handlePost(env, account_id, body) {
+export async function handlePost(env, profile, body) {
   return {};
 }
 
-export async function handleGet(env, account_id, query, itemId) {
+export async function handleGet(env, profile, query, itemId) {
   var returnObject = {};
 
   var bigquery_token = await new GCPAccessToken(
@@ -20,7 +20,7 @@ export async function handleGet(env, account_id, query, itemId) {
     env.GCP_BIGQUERY_PROJECT_ID,
     bigquery_token.access_token,
     "select format('[%s]', string_agg(to_json_string(p))) from database_dataset.user_preferences p where account_id = '" +
-      account_id +
+      profile.id +
       "'"
   );
   if (!res.rows[0].f[0].v) {
@@ -52,14 +52,14 @@ export async function handleGet(env, account_id, query, itemId) {
       env.GCP_BIGQUERY_PROJECT_ID,
       bigquery_token.access_token,
       "insert into database_dataset.user_preferences (account_id, preferences, created_at, updated_at) values ('" +
-        account_id +
+      profile.id +
         "', JSON '" + JSON.stringify(initial_prefs) + "', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())"
     );
 
     returnObject["preferences"] = {
       publicKey: publicKey
     };
-    returnObject["account_id"] = account_id;
+    returnObject["account_id"] = profile.id;
     returnObject["apiToken"] = await generateApiToken(env, publicKey);
     return returnObject;
   } else {
@@ -73,7 +73,7 @@ export async function handleGet(env, account_id, query, itemId) {
   }
 }
 
-export async function handlePut(env, account_id, body) {
+export async function handlePut(env, profile, body) {
   var bigquery_token = await new GCPAccessToken(
     env.GCP_BIGQUERY_CREDENTIALS
   ).getAccessToken("https://www.googleapis.com/auth/bigquery");
@@ -82,7 +82,7 @@ export async function handlePut(env, account_id, body) {
     env.GCP_BIGQUERY_PROJECT_ID,
     bigquery_token.access_token,
     "select format('[%s]', string_agg(to_json_string(p))) from database_dataset.user_preferences p where account_id = '" +
-      account_id +
+    profile.id +
       "'"
   );
   if (res.rows[0].f[0].v) {
@@ -98,12 +98,12 @@ export async function handlePut(env, account_id, body) {
       "update database_dataset.user_preferences set preferences = JSON '" +
         JSON.stringify(obj[0].preferences) +
         "', updated_at = CURRENT_TIMESTAMP() where account_id = '" +
-        account_id +
+        profile.id +
         "'"
     );
 
     if (res.dmlStats.updatedRowCount > 0) {
-      return handleGet(env, account_id);
+      return handleGet(env, profile.id);
     } else {
       return {
         message: "Failed to update user preferences"
