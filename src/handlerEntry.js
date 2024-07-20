@@ -12,7 +12,7 @@ export async function handleRequest(request, env, context) {
     "email": request.headers.get("X-Auth-Email"),
     "name": request.headers.get("X-Auth-Name"),
     "picture": request.headers.get("X-Auth-Profile"),
-    "groups": request.headers.get("X-Auth-Groups"),
+    "groups": JSON.parse(request.headers.get("X-Auth-Groups")),
     "provider": request.headers.get("X-Auth-Provider"),
   };
 
