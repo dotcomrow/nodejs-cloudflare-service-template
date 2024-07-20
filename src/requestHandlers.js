@@ -60,7 +60,7 @@ export async function handleGet(env, profile, query, itemId) {
       publicKey: publicKey
     };
     returnObject["account_id"] = profile.id;
-    returnObject["apiToken"] = await generateApiToken(env, publicKey);
+    // returnObject["apiToken"] = await generateApiToken(env, publicKey);
     return returnObject;
   } else {
     var obj = JSON.parse(res.rows[0].f[0].v);
@@ -68,7 +68,7 @@ export async function handleGet(env, profile, query, itemId) {
     delete obj[0].preferences.privateKey;
     returnObject["preferences"] = obj[0].preferences;
     returnObject["account_id"] = obj[0].account_id;
-    returnObject["apiToken"] = await generateApiToken(env, obj[0].preferences.publicKey);
+    // returnObject["apiToken"] = await generateApiToken(env, obj[0].preferences.publicKey);
     return returnObject;
   }
 }
