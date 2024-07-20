@@ -1,6 +1,6 @@
 import { GCPBigquery } from "npm-gcp-bigquery";
 import { GCPAccessToken } from "npm-gcp-token";
-import { GCPUserInfo } from "npm-gcp-userinfo";
+
 
 export async function handleDelete(env, account_id, query, itemId) {
   return {};
@@ -12,30 +12,7 @@ export async function handlePost(env, account_id, body) {
 export async function handleGet(env, account_id, query, itemId) {
   var returnObject = {};
 
-  var userinfo_token = new GCPAccessToken(
-    env.GCP_USERINFO_CREDENTIALS
-  ).getAccessToken(
-    "https://www.googleapis.com/auth/admin.directory.group.readonly"
-  );
-  var userinfo_response = await GCPUserInfo.getUserInfo(
-    (
-      await userinfo_token
-    ).access_token,
-    account_id,
-    env.DOMAIN
-  );
-
-  if (userinfo_response) {
-    // filter group data from response
-    var groups_return = [];
-    for (var obj of userinfo_response.groups) {
-      groups_return.push({
-        email: obj.email,
-        description: obj.description
-      });
-    }
-    returnObject["groups"] = groups_return;
-  }
+  
 
   var bigquery_token = await new GCPAccessToken(
     env.GCP_BIGQUERY_CREDENTIALS
