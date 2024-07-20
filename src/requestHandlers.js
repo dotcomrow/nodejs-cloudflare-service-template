@@ -103,7 +103,7 @@ export async function handlePut(env, profile, body) {
     );
 
     if (res.dmlStats.updatedRowCount > 0) {
-      return handleGet(env, profile.id);
+      return handleGet(env, profile);
     } else {
       return {
         message: "Failed to update user preferences"
