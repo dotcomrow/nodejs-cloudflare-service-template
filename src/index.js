@@ -7,7 +7,18 @@ export default {
   async fetch(request, env, context) {
     self.location = new URL("https://www.google.com");
     try {
-      return await handleRequest(request, env, context);
+      if (request.headers.get("X-Shared-Secret") == env.GLOBAL_SHARED_SECRET) {
+        return await handleRequest(request, env, context);
+      } else {
+        return new Response(JSON.stringify({
+          message: "Unauthorized"
+        }), {
+          status: 401,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+      }
     } catch (e) {
       var logging_token = await new GCPAccessToken(
         env.GCP_LOGGING_CREDENTIALS
