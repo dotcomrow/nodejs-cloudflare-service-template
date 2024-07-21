@@ -43,6 +43,7 @@ export async function handleRequest(request, env, context) {
   var responseObject = {};
   switch (request.method) {
     case "GET": {
+      const db = drizzle(env.cache);
       const cache = sqliteTable("cache", {
         account_id: varchar("account_id").notNull().primaryKey(),
         response: jsonb("response").notNull(),

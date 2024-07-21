@@ -1,3 +1,6 @@
+import { drizzle } from "drizzle-orm/d1";
+import { eq } from "drizzle-orm";
+
 export async function init_script(env) {
   const db = drizzle(env.cache);
   try {
