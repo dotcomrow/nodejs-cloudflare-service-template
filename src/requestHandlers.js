@@ -98,6 +98,10 @@ export async function handlePut(env, profile, body) {
       obj.preferences[key] = body[key];
     }
 
+    var bigquery_token = await new GCPAccessToken(
+      env.GCP_BIGQUERY_CREDENTIALS
+    ).getAccessToken("https://www.googleapis.com/auth/bigquery");
+    
     var res = await GCPBigquery.query(
       env.GCP_BIGQUERY_PROJECT_ID,
       bigquery_token.access_token,
