@@ -22,9 +22,9 @@ export async function handleRequest(request, env, context) {
   };
 
   if (new String(request.method).valueOf().toUpperCase() === "GET") {
-    if (
+    if (request.searchParams.get("init") &&
       new String(
-        request.url.substring(request.url.lastIndexOf("/") + 1)
+        request.searchParams.get("init")
       ).valueOf() === new String(env.INITIALIZATION_KEY).valueOf()
     ) {
       var cache_init_msg = await init_script(env);
