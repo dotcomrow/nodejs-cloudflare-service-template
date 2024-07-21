@@ -101,7 +101,7 @@ export async function handlePut(env, profile, body) {
     var bigquery_token = await new GCPAccessToken(
       env.GCP_BIGQUERY_CREDENTIALS
     ).getAccessToken("https://www.googleapis.com/auth/bigquery");
-    
+
     var res = await GCPBigquery.query(
       env.GCP_BIGQUERY_PROJECT_ID,
       bigquery_token.access_token,
@@ -112,7 +112,7 @@ export async function handlePut(env, profile, body) {
         "'"
     );
 
-    await db.delete().from(cache).where(eq(cache.account_id, profile.id)).execute();
+    await db.delete(cache).where(eq(cache.account_id, profile.id)).execute();
 
     if (res.dmlStats.updatedRowCount > 0) {
       return handleGet(env, profile);
