@@ -1,11 +1,7 @@
-locals {
-  project_name = var.project_name
-}
-
 resource "cloudflare_worker_domain" "project_domain" {
   account_id = var.cloudflare_account_id
-  hostname   = "${local.project_name}.${var.domain}"
-  service    = local.project_name
+  hostname   = "${var.project_name}.${var.domain}"
+  service    = var.project_name
   zone_id    = var.cloudflare_zone_id
 
   depends_on = [cloudflare_worker_script.project_script]
@@ -13,13 +9,18 @@ resource "cloudflare_worker_domain" "project_domain" {
 
 resource "cloudflare_worker_route" "project_route" {
   zone_id     = var.cloudflare_zone_id
-  pattern     = "${local.project_name}.${var.domain}/*"
+  pattern     = "${var.project_name}.${var.domain}/*"
   script_name = cloudflare_worker_script.project_script.name
+}
+
+resource "cloudflare_d1_database" "cache" {
+  account_id = var.cloudflare_account_id
+  name       = "${var.project_name}_database"
 }
 
 resource "cloudflare_worker_script" "project_script" {
   account_id         = var.cloudflare_account_id
-  name               = local.project_name
+  name               = var.project_name
   content            = file("${path.module}/dist/index.mjs")
   compatibility_date = "2023-08-28"
   module             = true
@@ -45,7 +46,12 @@ resource "cloudflare_worker_script" "project_script" {
   }
   plain_text_binding {
     name = "LOG_NAME"
-    text = "${local.project_name}_worker_log"
+    text = "${var.project_name}_worker_log"
+  }
+
+  secret_text_binding {
+    name = "INITIALIZATION_KEY"
+    text = var.init_key
   }
 
   secret_text_binding {
@@ -67,4 +73,9 @@ resource "cloudflare_worker_script" "project_script" {
     name = "GLOBAL_SHARED_SECRET"
     text = var.GLOBAL_SHARED_SECRET
   }
+
+  d1_database_binding {
+        name          =  "cache"
+        database_id   =  cloudflare_d1_database.cache.id
+    }
 }

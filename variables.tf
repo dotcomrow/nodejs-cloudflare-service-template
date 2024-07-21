@@ -28,6 +28,12 @@ variable project_name {
   nullable = false
 }
 
+variable init_key {
+  description = "initialization key"
+  type        = string
+  nullable = false
+}
+
 variable GCP_LOGGING_PROJECT_ID {
   description = "GCP logging project id"
   type        = string
