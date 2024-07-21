@@ -18,12 +18,22 @@ resource "cloudflare_d1_database" "cache" {
   name       = "${var.project_name}_database"
 }
 
+resource "cloudflare_workers_kv_namespace" "settings" {
+  account_id = var.cloudflare_account_id
+  title      = "settings"
+}
+
 resource "cloudflare_worker_script" "project_script" {
   account_id         = var.cloudflare_account_id
   name               = var.project_name
   content            = file("${path.module}/dist/index.mjs")
   compatibility_date = "2023-08-28"
   module             = true
+
+  kv_namespace_binding {
+    name         = "SETTINGS"
+    namespace_id = cloudflare_workers_kv_namespace.mapping.id
+  }
 
   plain_text_binding {
     name = "CORS_DOMAINS"

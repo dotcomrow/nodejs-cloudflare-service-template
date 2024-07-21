@@ -112,10 +112,14 @@ export async function handlePut(env, profile, body) {
         "'"
     );
 
-    await db.update(cache).set({
-      response: obj,
-      last_update_datetime: new Date(),
-    }).where(eq(cache.account_id, profile.id)).execute();
+    await db
+      .update(cache)
+      .set({
+        response: obj,
+        last_update_datetime: new Date(),
+      })
+      .where(eq(cache.account_id, profile.id))
+      .execute();
 
     if (res.dmlStats.updatedRowCount > 0) {
       return handleGet(env, profile);
@@ -125,9 +129,50 @@ export async function handlePut(env, profile, body) {
       };
     }
   } else {
-    return {
-      message: "Account not found",
-    };
+    var bigquery_token = await new GCPAccessToken(
+      env.GCP_BIGQUERY_CREDENTIALS
+    ).getAccessToken("https://www.googleapis.com/auth/bigquery");
+
+    var res = await GCPBigquery.query(
+      env.GCP_BIGQUERY_PROJECT_ID,
+      bigquery_token.access_token,
+      "select format('[%s]', string_agg(to_json_string(p))) from database_dataset.user_preferences p where account_id = '" +
+        profile.id +
+        "'"
+    );
+
+    var responseObject = JSON.parse(res.rows[0].f[0].v)[0];
+
+    for (var key of Object.keys(body)) {
+      responseObject.preferences[key] = body[key];
+    }
+
+    var res = await GCPBigquery.query(
+      env.GCP_BIGQUERY_PROJECT_ID,
+      bigquery_token.access_token,
+      "update database_dataset.user_preferences set preferences = JSON '" +
+        JSON.stringify(obj.preferences) +
+        "', updated_at = CURRENT_TIMESTAMP() where account_id = '" +
+        profile.id +
+        "'"
+    );
+
+    await db
+      .insert(cache)
+      .values({
+        account_id: profile.id,
+        response: responseObject,
+        last_update_datetime: new Date(),
+      })
+      .execute();
+
+    if (res.dmlStats.updatedRowCount > 0) {
+      return handleGet(env, profile);
+    } else {
+      return {
+        message: "Failed to update user preferences",
+      };
+    }
   }
 }
 
