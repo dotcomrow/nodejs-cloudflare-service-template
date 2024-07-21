@@ -1,7 +1,7 @@
 import { GCPBigquery } from "npm-gcp-bigquery";
 import { GCPAccessToken } from "npm-gcp-token";
 import { sqliteTable } from "drizzle-orm/sqlite-core";
-import { jsonb, timestamp, varchar } from "drizzle-orm/pg-core";
+import { jsonb, numeric, varchar } from "drizzle-orm/pg-core";
 import { drizzle } from "drizzle-orm/d1";
 import { eq } from "drizzle-orm";
 
@@ -77,7 +77,7 @@ export async function handlePut(env, profile, body) {
   const cache = sqliteTable("cache", {
     account_id: varchar("account_id").notNull().primaryKey(),
     response: jsonb("response").notNull(),
-    last_update_datetime: timestamp("last_update_datetime").notNull(),
+    last_update_datetime: numeric("last_update_datetime").notNull(),
   });
 
   try {
@@ -116,7 +116,7 @@ export async function handlePut(env, profile, body) {
       .update(cache)
       .set({
         response: obj,
-        last_update_datetime: new Date(),
+        last_update_datetime: new Date().getTime(),
       })
       .where(eq(cache.account_id, profile.id))
       .execute();
@@ -162,7 +162,7 @@ export async function handlePut(env, profile, body) {
       .values({
         account_id: profile.id,
         response: responseObject,
-        last_update_datetime: new Date(),
+        last_update_datetime: new Date().getTime(),
       })
       .execute();
 

@@ -1,17 +1,15 @@
-import { drizzle } from "drizzle-orm/d1";
 import { GCPLogger } from "npm-gcp-logging";
 import { GCPAccessToken } from "npm-gcp-token";
 import { serializeError } from "serialize-error";
 
 export async function init_script(env) {
-  const db = drizzle(env.cache);
   try {
     await env.cache
       .prepare(
         `CREATE TABLE cache (
       account_id varchar(64) PRIMARY KEY,
       response jsonb,
-      last_update_datetime timestamp)`
+      last_update_datetime numeric)`
       )
       .run();
   } catch (e) {

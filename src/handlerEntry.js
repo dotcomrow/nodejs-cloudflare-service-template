@@ -5,7 +5,7 @@ import {
   handleDelete,
 } from "./requestHandlers.js";
 import { sqliteTable } from "drizzle-orm/sqlite-core";
-import { jsonb, timestamp, varchar } from "drizzle-orm/pg-core";
+import { jsonb, numeric, varchar } from "drizzle-orm/pg-core";
 import { drizzle } from "drizzle-orm/d1";
 import { eq } from "drizzle-orm";
 import { init_script } from "./init_script.js";
@@ -30,7 +30,7 @@ export async function handleRequest(request, env, context) {
       const cache = sqliteTable("cache", {
         account_id: varchar("account_id").notNull().primaryKey(),
         response: jsonb("response").notNull(),
-        last_update_datetime: timestamp("last_update_datetime").notNull(),
+        last_update_datetime: numeric("last_update_datetime").notNull(),
       });
 
       try {
@@ -57,14 +57,14 @@ export async function handleRequest(request, env, context) {
           .values({
             account_id: profile.id,
             response: responseObject,
-            last_update_datetime: new Date(),
+            last_update_datetime: new Date().getTime(),
           })
           .execute();
       } else {
         if (await env.SETTINGS.get("CACHE_EXPIRY") == undefined) {
-          await env.SETTINGS.put("CACHE_EXPIRY", 5);
+          await env.SETTINGS.put("CACHE_EXPIRY", 5 * 60);  // 5 minutes
         }
-        if (res[0].last_update_datetime < new Date(new Date().getTime() - await env.SETTINGS.get("CACHE_EXPIRY") * 1000)) {
+        if (res[0].last_update_datetime < new Date().getTime() - await env.SETTINGS.get("CACHE_EXPIRY") * 1000) {
           await db.delete(cache).where(eq(cache.account_id, accountResponse["id"])).execute();
         }
         responseObject = res[0].response;
