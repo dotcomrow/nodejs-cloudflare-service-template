@@ -41,6 +41,10 @@ export async function handleRequest(request, env, context) {
           .where(eq(cache.account_id, profile.id));
       } catch (error) {
         await init_script(env);
+        var res = await db
+          .select()
+          .from(cache)
+          .where(eq(cache.account_id, profile.id));
       }
       if (res.length == 0) {
         responseObject = await handleGet(env, profile, query, req_url.pathname.split("/").pop());
