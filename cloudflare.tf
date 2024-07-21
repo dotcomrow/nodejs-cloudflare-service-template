@@ -70,7 +70,7 @@ resource "cloudflare_worker_script" "project_script" {
   }
 
   d1_database_binding {
-        name          =  "cache"
-        database_id   =  cloudflare_d1_database.cache.id
-    }
+    name        = "cache"
+    database_id = cloudflare_d1_database.cache.id
+  }
 }
