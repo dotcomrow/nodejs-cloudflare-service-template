@@ -1,14 +1,10 @@
 import { drizzle } from "drizzle-orm/d1";
-import { eq } from "drizzle-orm";
+import { GCPLogger } from "npm-gcp-logging";
+import { GCPAccessToken } from "npm-gcp-token";
 
 export async function init_script(env) {
   const db = drizzle(env.cache);
   try {
-    var res = await db
-      .select()
-      .from(cache)
-      .where(eq(cache.account_id, profile.id));
-  } catch (error) {
     await env.user_prefs_database
       .prepare(
         `CREATE TABLE cache (
@@ -17,6 +13,24 @@ export async function init_script(env) {
       last_update_datetime timestamp)`
       )
       .run();
+  } catch (e) {
+    var logging_token = await new GCPAccessToken(
+      env.GCP_LOGGING_CREDENTIALS
+    ).getAccessToken("https://www.googleapis.com/auth/logging.write");
+    const responseError = serializeError(e);
+    await GCPLogger.logEntry(
+      env.GCP_LOGGING_PROJECT_ID,
+      logging_token.access_token,
+      env.LOG_NAME,
+      [
+        {
+          severity: "ERROR",
+          // textPayload: message,
+          jsonPayload: {
+            responseError,
+          },
+        },
+      ]
+    );
   }
-  return "initialization complete";
 }

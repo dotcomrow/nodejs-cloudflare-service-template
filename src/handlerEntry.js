@@ -21,22 +21,6 @@ export async function handleRequest(request, env, context) {
     "provider": request.headers.get("X-Auth-Provider"),
   };
 
-  if (new String(request.method).valueOf().toUpperCase() === "GET") {
-    if (request.searchParams.get("init") &&
-      new String(
-        request.searchParams.get("init")
-      ).valueOf() === new String(env.INITIALIZATION_KEY).valueOf()
-    ) {
-      var cache_init_msg = await init_script(env);
-      return new Response(JSON.stringify({ message: cache_init_msg }), {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-    }
-  }
-
   var req_url = new URL(request.url)
   var query = QueryStringToJSON(req_url.search);
 
@@ -50,10 +34,14 @@ export async function handleRequest(request, env, context) {
         last_update_datetime: timestamp("last_update_datetime").notNull(),
       });
 
+      try {
       var res = await db
           .select()
           .from(cache)
           .where(eq(cache.account_id, profile.id));
+      } catch (error) {
+        await init_script(env);
+      }
       if (res.length == 0) {
         responseObject = await handleGet(env, profile, query, req_url.pathname.split("/").pop());
         await db

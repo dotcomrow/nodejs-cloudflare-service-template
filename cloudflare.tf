@@ -50,11 +50,6 @@ resource "cloudflare_worker_script" "project_script" {
   }
 
   secret_text_binding {
-    name = "INITIALIZATION_KEY"
-    text = var.init_key
-  }
-
-  secret_text_binding {
     name = "GCP_LOGGING_CREDENTIALS"
     text = var.GCP_LOGGING_CREDENTIALS
   }

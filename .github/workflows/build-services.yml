@@ -88,10 +88,6 @@ jobs:
               core.setFailed(error.message);
             }
 
-      - name: Set outputs
-        id: vars
-        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-
       - name: Create workspace
         id: create_workspace
         run: |
@@ -147,37 +143,6 @@ jobs:
             --data @payload.json \
             https://app.terraform.io/api/v2/vars
 
-            cat > payload.json <<EOF
-            {
-              "data": {
-                "type":"vars",
-                "attributes": {
-                  "key":"init_key",
-                  "value":"${{ steps.vars.outputs.sha_short }}",
-                  "description":"initialization key",
-                  "category":"terraform",
-                  "hcl":false,
-                  "sensitive":true
-                },
-                "relationships": {
-                  "workspace": {
-                    "data": {
-                      "id":"${{ steps.create_workspace.outputs.workspace_id }}",
-                      "type":"workspaces"
-                    }
-                  }
-                }
-              }
-            }
-            EOF
-            curl \
-            --header "Authorization: Bearer ${{ secrets.TFE_TOKEN }}" \
-            --header "Content-Type: application/vnd.api+json" \
-            --request POST \
-            --data @payload.json \
-            https://app.terraform.io/api/v2/vars
-
-
       - uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.1.1
         id: upload
         with:
@@ -192,11 +157,3 @@ jobs:
           workspace: ${{ github.event.repository.name }}
           configuration_version: ${{ steps.upload.outputs.configuration_version_id }}
           plan_only: false
-
-      - name: Call initialization Code
-        run: |
-          docker run --rm lwthiker/curl-impersonate:0.5-chrome curl_chrome101 'https://${{ github.event.repository.name }}.suncoast.systems/${{ steps.vars.outputs.sha_short }}' > output.txt
-          while [ -z `cat output.txt | jq -r '.message // empty'` ]; do
-              sleep 10 # throttle the check
-              docker run --rm lwthiker/curl-impersonate:0.5-chrome curl_chrome101 'https://${{ github.event.repository.name }}.suncoast.systems/${{ steps.vars.outputs.sha_short }}' > output.txt
-          done
