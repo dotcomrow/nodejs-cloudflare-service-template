@@ -6,7 +6,7 @@ import { serializeError } from "serialize-error";
 export async function init_script(env) {
   const db = drizzle(env.cache);
   try {
-    await env.user_prefs_database
+    await env.cache
       .prepare(
         `CREATE TABLE cache (
       account_id varchar(64) PRIMARY KEY,
