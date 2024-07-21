@@ -112,7 +112,10 @@ export async function handlePut(env, profile, body) {
         "'"
     );
 
-    await db.delete(cache).where(eq(cache.account_id, profile.id)).execute();
+    await db.update(cache).set({
+      response: obj,
+      last_update_datetime: new Date(),
+    }).where(eq(cache.account_id, profile.id)).execute();
 
     if (res.dmlStats.updatedRowCount > 0) {
       return handleGet(env, profile);
