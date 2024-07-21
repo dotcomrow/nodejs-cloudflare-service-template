@@ -11,17 +11,16 @@ import { eq } from "drizzle-orm";
 import { init_script } from "./init_script.js";
 
 export async function handleRequest(request, env, context) {
-  
   var profile = {
-    "id": request.headers.get("X-Auth-User"),
-    "email": request.headers.get("X-Auth-Email"),
-    "name": request.headers.get("X-Auth-Name"),
-    "picture": request.headers.get("X-Auth-Profile"),
-    "groups": JSON.parse(request.headers.get("X-Auth-Groups")),
-    "provider": request.headers.get("X-Auth-Provider"),
+    id: request.headers.get("X-Auth-User"),
+    email: request.headers.get("X-Auth-Email"),
+    name: request.headers.get("X-Auth-Name"),
+    picture: request.headers.get("X-Auth-Profile"),
+    groups: JSON.parse(request.headers.get("X-Auth-Groups")),
+    provider: request.headers.get("X-Auth-Provider"),
   };
 
-  var req_url = new URL(request.url)
+  var req_url = new URL(request.url);
   var query = QueryStringToJSON(req_url.search);
 
   var responseObject = {};
@@ -35,7 +34,7 @@ export async function handleRequest(request, env, context) {
       });
 
       try {
-      var res = await db
+        var res = await db
           .select()
           .from(cache)
           .where(eq(cache.account_id, profile.id));
@@ -47,7 +46,12 @@ export async function handleRequest(request, env, context) {
           .where(eq(cache.account_id, profile.id));
       }
       if (res.length == 0) {
-        responseObject = await handleGet(env, profile, query, req_url.pathname.split("/").pop());
+        responseObject = await handleGet(
+          env,
+          profile,
+          query,
+          req_url.pathname.split("/").pop()
+        );
         await db
           .insert(cache)
           .values({
@@ -70,12 +74,17 @@ export async function handleRequest(request, env, context) {
       responseObject = await handlePost(env, profile, bodyObj);
       break;
     case "DELETE":
-      responseObject = await handleDelete(env, profile, query, req_url.pathname.split("/").pop());
+      responseObject = await handleDelete(
+        env,
+        profile,
+        query,
+        req_url.pathname.split("/").pop()
+      );
       break;
   }
 
   return new Response(JSON.stringify(responseObject), {
-    status: 200
+    status: 200,
   });
 }
 
