@@ -15,10 +15,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check state of initial-deploy workflow
+        id: check_state
+        run: |
+          echo "initial_deploy_state=$(gh api -H 'Accept: application/vnd.github+json' -H 'X-GitHub-Api-Version: 2022-11-28' /repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/actions/workflows/initial-deploy.yml | jq -r '.state')" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ github.token }}
+
       - name: Checkout
+        if: ${{ steps.check_state.outputs.initial_deploy_state == 'disabled_manually' }}
         uses: actions/checkout@v3
 
       - name: Create release branch if it doesn't exist
+        if: ${{ steps.check_state.outputs.initial_deploy_state == 'disabled_manually' }}
         continue-on-error: true
         run: |
           git config --global user.name "${{ github.actor }}"
@@ -31,30 +40,35 @@ jobs:
 
       - name: Create Release branch
         uses: JamesIves/github-pages-deploy-action@v4
+        if: ${{ steps.check_state.outputs.initial_deploy_state == 'disabled_manually' }}
         with:
           branch: release # The branch the action should deploy to.
           folder: . # The folder the action should deploy.
 
       - name: Checkout Release branch
         uses: actions/checkout@v3
+        if: ${{ steps.check_state.outputs.initial_deploy_state == 'disabled_manually' }}
         with:
           ref: release
           path: release
 
       - name: Get next version
         uses: reecetech/version-increment@2023.9.3
+        if: ${{ steps.check_state.outputs.initial_deploy_state == 'disabled_manually' }}
         id: version
         with:
           scheme: calver
           increment: patch
 
       - name: Build
+        if: ${{ steps.check_state.outputs.initial_deploy_state == 'disabled_manually' }}
         run: |
           cd release
           npm --prefix ./ install
           npm --prefix ./ run build
 
       - name: Commit
+        if: ${{ steps.check_state.outputs.initial_deploy_state == 'disabled_manually' }}
         run: |
           cd release
           git config --global user.name "${{ github.actor }}"
@@ -65,6 +79,7 @@ jobs:
 
       - name: Create release
         uses: "actions/github-script@v6"
+        if: ${{ steps.check_state.outputs.initial_deploy_state == 'disabled_manually' }}
         env:
           VERSION: ${{ steps.version.outputs.version }}
         with:
@@ -89,6 +104,7 @@ jobs:
 
       - name: Create workspace
         id: create_workspace
+        if: ${{ steps.check_state.outputs.initial_deploy_state == 'disabled_manually' }}
         run: |
           cat > payload.json <<EOF
           {
@@ -107,10 +123,12 @@ jobs:
           --request POST \
           --data @payload.json \
           --output output.txt \
-          https://app.terraform.io/api/v2/organizations/${{ vars.TF_ORGANIZATION }}/workspaces
+          https://app.terraform.io/api/v2/organizations/${{ github.repository_owner }}/workspaces
           echo "workspace_id=$(cat output.txt | jq -r '.[].id')" >> $GITHUB_OUTPUT
 
       - name: Create workspace variables
+        id: setvars
+        if: ${{ steps.check_state.outputs.initial_deploy_state == 'disabled_manually' }}
         run: |
             cat > payload.json <<EOF
             {
@@ -144,15 +162,16 @@ jobs:
 
       - uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.1.1
         id: upload
+        if: ${{ steps.check_state.outputs.initial_deploy_state == 'disabled_manually' }}
         with:
-              workspace: ${{ github.event.repository.name }}
+              workspace: ${{ github.event.repository.name }}-${{ steps.setvars.outputs.environment }}
               directory: release
-
+    
       - name: Create Apply Run
         uses: hashicorp/tfc-workflows-github/actions/create-run@v1.1.1
         id: apply-run
-        if: success() || failure()
+        if: ${{ steps.check_state.outputs.initial_deploy_state == 'disabled_manually' }}
         with:
-          workspace: ${{ github.event.repository.name }}
-          configuration_version: ${{ steps.upload.outputs.configuration_version_id }}
-          plan_only: false
+              workspace: ${{ github.event.repository.name }}-${{ steps.setvars.outputs.environment }}
+              configuration_version: ${{ steps.upload.outputs.configuration_version_id }}
+              plan_only: false
