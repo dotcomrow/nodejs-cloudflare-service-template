@@ -63,3 +63,9 @@ variable GLOBAL_SHARED_SECRET {
   type = string
   nullable = false
 }
+
+variable environment {
+  description = "Environment"
+  type = string
+  nullable = false
+}
