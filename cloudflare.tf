@@ -1,31 +1,31 @@
-resource "cloudflare_worker_domain" "project_domain" {
+resource "cloudflare_workers_domain" "project_domain" {
   account_id = var.cloudflare_account_id
-  hostname   = "${var.project_name}.${var.domain}"
-  service    = var.project_name
+  hostname   = "${var.project_name}.${var.environment}.${var.domain}"
+  service    = "${var.project_name}-${var.environment}"
   zone_id    = var.cloudflare_zone_id
 
-  depends_on = [cloudflare_worker_script.project_script]
+  depends_on = [cloudflare_workers_script.project_script]
 }
 
-resource "cloudflare_worker_route" "project_route" {
+resource "cloudflare_workers_route" "project_route" {
   zone_id     = var.cloudflare_zone_id
-  pattern     = "${var.project_name}.${var.domain}/*"
-  script_name = cloudflare_worker_script.project_script.name
+  pattern     = "${var.project_name}.${var.environment}.${var.domain}/*"
+  script_name = cloudflare_workers_script.project_script.name
 }
 
 resource "cloudflare_d1_database" "cache" {
   account_id = var.cloudflare_account_id
-  name       = "${var.project_name}_database"
+  name       = "${var.project_name}_${var.environment}_database"
 }
 
 resource "cloudflare_workers_kv_namespace" "settings" {
   account_id = var.cloudflare_account_id
-  title      = "${var.project_name}-settings"
+  title      = "${var.project_name}-${var.environment}-settings"
 }
 
-resource "cloudflare_worker_script" "project_script" {
+resource "cloudflare_workers_script" "project_script" {
   account_id         = var.cloudflare_account_id
-  name               = var.project_name
+  name               = "${var.project_name}-${var.environment}"
   content            = file("${path.module}/dist/index.mjs")
   compatibility_date = "2023-08-28"
   module             = true
