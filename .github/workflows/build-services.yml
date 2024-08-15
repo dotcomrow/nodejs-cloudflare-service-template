@@ -9,8 +9,8 @@ permissions: write-all
 jobs:
   deploy:
     env:
-        TF_CLOUD_ORGANIZATION: ${{ github.repository_owner }}
-        TF_API_TOKEN: ${{ secrets.TFE_TOKEN }}
+      TF_CLOUD_ORGANIZATION: ${{ github.repository_owner }}
+      TF_API_TOKEN: ${{ secrets.TFE_TOKEN }}
     name: "Build and Deploy"
     runs-on: ubuntu-latest
 
@@ -59,6 +59,17 @@ jobs:
         with:
           scheme: calver
           increment: patch
+
+      - name: Set variables
+        id: setvars
+        run: |
+          if [[ "${{github.base_ref}}" == "dev" || "${{github.ref}}" == "refs/heads/dev" ]]; then
+            echo "environment=dev" >> $GITHUB_OUTPUT
+          fi
+
+          if [[ "${{github.base_ref}}" == "prod" || "${{github.ref}}" == "refs/heads/prod" ]]; then
+            echo "environment=prod" >> $GITHUB_OUTPUT
+          fi
 
       - name: Build
         if: ${{ steps.check_state.outputs.initial_deploy_state == 'disabled_manually' }}
@@ -130,48 +141,48 @@ jobs:
         id: setvars
         if: ${{ steps.check_state.outputs.initial_deploy_state == 'disabled_manually' }}
         run: |
-            cat > payload.json <<EOF
-            {
-              "data": {
-                "type":"vars",
-                "attributes": {
-                  "key":"project_name",
-                  "value":"${{ github.event.repository.name }}",
-                  "description":"project name",
-                  "category":"terraform",
-                  "hcl":false,
-                  "sensitive":false
-                },
-                "relationships": {
-                  "workspace": {
-                    "data": {
-                      "id":"${{ steps.create_workspace.outputs.workspace_id }}",
-                      "type":"workspaces"
-                    }
+          cat > payload.json <<EOF
+          {
+            "data": {
+              "type":"vars",
+              "attributes": {
+                "key":"project_name",
+                "value":"${{ github.event.repository.name }}",
+                "description":"project name",
+                "category":"terraform",
+                "hcl":false,
+                "sensitive":false
+              },
+              "relationships": {
+                "workspace": {
+                  "data": {
+                    "id":"${{ steps.create_workspace.outputs.workspace_id }}",
+                    "type":"workspaces"
                   }
                 }
               }
             }
-            EOF
-            curl \
-            --header "Authorization: Bearer ${{ secrets.TFE_TOKEN }}" \
-            --header "Content-Type: application/vnd.api+json" \
-            --request POST \
-            --data @payload.json \
-            https://app.terraform.io/api/v2/vars
+          }
+          EOF
+          curl \
+          --header "Authorization: Bearer ${{ secrets.TFE_TOKEN }}" \
+          --header "Content-Type: application/vnd.api+json" \
+          --request POST \
+          --data @payload.json \
+          https://app.terraform.io/api/v2/vars
 
       - uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.1.1
         id: upload
         if: ${{ steps.check_state.outputs.initial_deploy_state == 'disabled_manually' }}
         with:
-              workspace: ${{ github.event.repository.name }}-${{ steps.setvars.outputs.environment }}
-              directory: release
-    
+          workspace: ${{ github.event.repository.name }}-${{ steps.setvars.outputs.environment }}
+          directory: release
+
       - name: Create Apply Run
         uses: hashicorp/tfc-workflows-github/actions/create-run@v1.1.1
         id: apply-run
         if: ${{ steps.check_state.outputs.initial_deploy_state == 'disabled_manually' }}
         with:
-              workspace: ${{ github.event.repository.name }}-${{ steps.setvars.outputs.environment }}
-              configuration_version: ${{ steps.upload.outputs.configuration_version_id }}
-              plan_only: false
+          workspace: ${{ github.event.repository.name }}-${{ steps.setvars.outputs.environment }}
+          configuration_version: ${{ steps.upload.outputs.configuration_version_id }}
+          plan_only: false
