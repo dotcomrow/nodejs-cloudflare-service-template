@@ -1,0 +1,37 @@
+name = "preferences-service"
+type = "webpack"
+
+workers_dev = false
+webpack_config = "webpack.config.js"
+compatibility_date = "2024-02-14"
+node_compat = false
+
+[build]
+command = "npm install && npm run build"
+
+[build.upload]
+format = "modules"
+main = "index.mjs"
+
+[dev]
+ip = "0.0.0.0"
+port = 8787
+local_protocol="http"
+upstream_protocol="https"
+
+[[kv_namespaces]]
+binding = "SETTINGS"
+id = "bb2c80c4c9f34d6284626e3a9690efc9"
+
+[[d1_databases]]
+binding = "cache" # available in your Worker on env.DB
+database_name = "nodejs-cloudflare-service-template_dev_database"
+database_id = "d28f6353-d3cb-48b0-976b-f1602b4cdd45"
+
+[vars]
+CORS_DOMAINS = ".*.suncoast.systems,.*localhost.*"
+DOMAIN = "suncoast.systems"
+GCP_LOGGING_PROJECT_ID="gcploggingproject-427121"
+LOG_NAME="nodejs-cloudflare-service-template_worker_log"
+GCP_BIGQUERY_PROJECT_ID="database-30f7f3c2abdbda4f"
+GLOBAL_SHARED_SECRET="asdf"
