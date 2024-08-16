@@ -22,11 +22,11 @@ export async function handleGet(env, profile, query, itemId) {
   var res = await GCPBigquery.query(
     env.GCP_BIGQUERY_PROJECT_ID,
     bigquery_token.access_token,
-    "select format('[%s]', string_agg(to_json_string(p))) from database_dataset.user_preferences p where account_id = '" +
+    "select * from database_dataset.user_preferences p where account_id = '" +
       profile.id +
       "'"
   );
-  if (!res.rows[0].f[0].v) {
+  if (res.length == 0) {
     var initial_prefs = {};
     var keypair = await crypto.subtle.generateKey(
       {
@@ -62,11 +62,8 @@ export async function handleGet(env, profile, query, itemId) {
     // returnObject["apiToken"] = await generateApiToken(env, publicKey);
     return returnObject;
   } else {
-    var obj = JSON.parse(res.rows[0].f[0].v);
-    obj[0].preferences.privateKey = null;
-    delete obj[0].preferences.privateKey;
-    returnObject["preferences"] = obj[0].preferences;
-    returnObject["account_id"] = obj[0].account_id;
+    returnObject["preferences"] = JSON.parse(res[0].preferences);
+    returnObject["account_id"] = res[0].account_id;
     // returnObject["apiToken"] = await generateApiToken(env, obj[0].preferences.publicKey);
     return returnObject;
   }

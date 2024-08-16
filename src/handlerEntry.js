@@ -91,6 +91,9 @@ export async function handleRequest(request, env, context) {
 
   return new Response(JSON.stringify(responseObject), {
     status: 200,
+    headers: {
+      "Content-Type": "application/json",
+    },
   });
 }
 
