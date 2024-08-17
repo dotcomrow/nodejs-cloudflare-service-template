@@ -15,6 +15,12 @@ export async function handlePost(env, profile, body) {
 export async function handleGet(env, profile, query, itemId) {
   var returnObject = {};
 
+  if (profile.id == undefined) {
+    return {
+      message: "No account_id in profile",
+    };
+  }
+
   var bigquery_token = await new GCPAccessToken(
     env.GCP_BIGQUERY_CREDENTIALS
   ).getAccessToken("https://www.googleapis.com/auth/bigquery");
