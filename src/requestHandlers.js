@@ -85,7 +85,7 @@ export async function handlePut(env, profile, body) {
       "'"
   );
 
-  var obj = Object.assign({}, res[0]);
+  var obj = JSON.parse(Object.assign({}, res[0]));
   for (var key of Object.keys(body)) {
     obj.preferences[key] = body[key];
   }
