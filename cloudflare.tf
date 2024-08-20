@@ -13,11 +13,6 @@ resource "cloudflare_workers_route" "project_route" {
   script_name = cloudflare_workers_script.project_script.name
 }
 
-resource "cloudflare_d1_database" "cache" {
-  account_id = var.cloudflare_account_id
-  name       = "${var.project_name}_${var.environment}_database"
-}
-
 resource "cloudflare_workers_kv_namespace" "settings" {
   account_id = var.cloudflare_account_id
   title      = "${var.project_name}-${var.environment}-settings"
@@ -82,10 +77,5 @@ resource "cloudflare_workers_script" "project_script" {
   secret_text_binding {
     name = "GLOBAL_SHARED_SECRET"
     text = var.GLOBAL_SHARED_SECRET
-  }
-
-  d1_database_binding {
-    name        = "cache"
-    database_id = cloudflare_d1_database.cache.id
   }
 }
