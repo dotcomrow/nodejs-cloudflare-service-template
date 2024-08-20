@@ -1,9 +1,5 @@
 import { GCPBigquery } from "npm-gcp-bigquery";
 import { GCPAccessToken } from "npm-gcp-token";
-import { sqliteTable } from "drizzle-orm/sqlite-core";
-import { jsonb, numeric, varchar } from "drizzle-orm/pg-core";
-import { drizzle } from "drizzle-orm/d1";
-import { eq } from "drizzle-orm";
 
 export async function handleDelete(env, profile, query, itemId) {
   return {};
