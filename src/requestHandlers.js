@@ -76,107 +76,46 @@ export async function handleGet(env, profile, query, itemId) {
 }
 
 export async function handlePut(env, profile, body) {
-  const db = drizzle(env.cache);
-  const cache = sqliteTable("cache", {
-    account_id: varchar("account_id").notNull().primaryKey(),
-    response: jsonb("response").notNull(),
-    last_update_datetime: numeric("last_update_datetime").notNull(),
-  });
 
-  try {
-    var res = await db
-      .select()
-      .from(cache)
-      .where(eq(cache.account_id, profile.id));
-  } catch (error) {
-    return {
-      message: "Failed to update user preferences",
-    };
+  var res = await GCPBigquery.query(
+    env.GCP_BIGQUERY_PROJECT_ID,
+    bigquery_token.access_token,
+    "select * from database_dataset.user_preferences p where account_id = '" +
+      profile.id +
+      "'"
+  );
+
+  var obj = res[0];
+  for (var key of Object.keys(body)) {
+    obj.preferences[key] = body[key];
   }
 
-  if (res.length > 0) {
-    var obj = res[0].response;
+  var bigquery_token = await new GCPAccessToken(
+    env.GCP_BIGQUERY_CREDENTIALS
+  ).getAccessToken("https://www.googleapis.com/auth/bigquery");
 
-    for (var key of Object.keys(body)) {
-      obj.preferences[key] = body[key];
-    }
+  var res = await GCPBigquery.query(
+    env.GCP_BIGQUERY_PROJECT_ID,
+    bigquery_token.access_token,
+    "update database_dataset.user_preferences set preferences = JSON '" +
+      JSON.stringify(obj.preferences) +
+      "', updated_at = CURRENT_TIMESTAMP() where account_id = '" +
+      profile.id +
+      "'"
+  );
 
-    var bigquery_token = await new GCPAccessToken(
-      env.GCP_BIGQUERY_CREDENTIALS
-    ).getAccessToken("https://www.googleapis.com/auth/bigquery");
+  var res = await GCPBigquery.query(
+    env.GCP_BIGQUERY_PROJECT_ID,
+    bigquery_token.access_token,
+    "select * from database_dataset.user_preferences p where account_id = '" +
+      profile.id +
+      "'"
+  );
 
-    var res = await GCPBigquery.query(
-      env.GCP_BIGQUERY_PROJECT_ID,
-      bigquery_token.access_token,
-      "update database_dataset.user_preferences set preferences = JSON '" +
-        JSON.stringify(obj.preferences) +
-        "', updated_at = CURRENT_TIMESTAMP() where account_id = '" +
-        profile.id +
-        "'"
-    );
-
-    await db
-      .update(cache)
-      .set({
-        response: obj,
-        last_update_datetime: new Date().getTime(),
-      })
-      .where(eq(cache.account_id, profile.id))
-      .execute();
-
-    if (res.dmlStats.updatedRowCount > 0) {
-      return handleGet(env, profile);
-    } else {
-      return {
-        message: "Failed to update user preferences",
-      };
-    }
-  } else {
-    var bigquery_token = await new GCPAccessToken(
-      env.GCP_BIGQUERY_CREDENTIALS
-    ).getAccessToken("https://www.googleapis.com/auth/bigquery");
-
-    var res = await GCPBigquery.query(
-      env.GCP_BIGQUERY_PROJECT_ID,
-      bigquery_token.access_token,
-      "select format('[%s]', string_agg(to_json_string(p))) from database_dataset.user_preferences p where account_id = '" +
-        profile.id +
-        "'"
-    );
-
-    var responseObject = JSON.parse(res.rows[0].f[0].v)[0];
-
-    for (var key of Object.keys(body)) {
-      responseObject.preferences[key] = body[key];
-    }
-
-    var res = await GCPBigquery.query(
-      env.GCP_BIGQUERY_PROJECT_ID,
-      bigquery_token.access_token,
-      "update database_dataset.user_preferences set preferences = JSON '" +
-        JSON.stringify(responseObject.preferences) +
-        "', updated_at = CURRENT_TIMESTAMP() where account_id = '" +
-        profile.id +
-        "'"
-    );
-
-    await db
-      .insert(cache)
-      .values({
-        account_id: profile.id,
-        response: responseObject,
-        last_update_datetime: new Date().getTime(),
-      })
-      .execute();
-
-    if (res.dmlStats.updatedRowCount > 0) {
-      return handleGet(env, profile);
-    } else {
-      return {
-        message: "Failed to update user preferences",
-      };
-    }
-  }
+  return {
+    preferences: JSON.parse(res[0].preferences),
+    account_id: res[0].account_id,
+  };
 }
 
 async function generateApiToken(env, publicKey) {
