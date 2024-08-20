@@ -26,7 +26,7 @@ export default {
           severity: "ERROR",
           jsonPayload: {
             message: "Exception occurred in fetch",
-            error: serializeError(err),
+            error: responseError,
           },
         },
       ]);

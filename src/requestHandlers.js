@@ -77,6 +77,10 @@ export async function handleGet(env, profile, query, itemId) {
 
 export async function handlePut(env, profile, body) {
 
+  var bigquery_token = await new GCPAccessToken(
+    env.GCP_BIGQUERY_CREDENTIALS
+  ).getAccessToken("https://www.googleapis.com/auth/bigquery");
+
   var res = await GCPBigquery.query(
     env.GCP_BIGQUERY_PROJECT_ID,
     bigquery_token.access_token,
@@ -89,10 +93,6 @@ export async function handlePut(env, profile, body) {
   for (var key of Object.keys(body)) {
     obj.preferences[key] = body[key];
   }
-
-  var bigquery_token = await new GCPAccessToken(
-    env.GCP_BIGQUERY_CREDENTIALS
-  ).getAccessToken("https://www.googleapis.com/auth/bigquery");
 
   var res = await GCPBigquery.query(
     env.GCP_BIGQUERY_PROJECT_ID,
