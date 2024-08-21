@@ -27,9 +27,6 @@ export async function handleRequest(request, env, context) {
         query,
         req_url.pathname.split("/").pop()
       );
-
-      responseObject = res[0].response;
-
       break;
     }
     case "PUT":
