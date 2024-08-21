@@ -20,13 +20,14 @@ export default {
         });
       }
     } catch (e) {
+      console.log(e);
       const responseError = serializeError(e);
       await LogUtility.logEntry(loggingContext, [
         {
           severity: "ERROR",
           jsonPayload: {
             message: "Exception occurred in fetch",
-            error: serializeError(err),
+            error: responseError,
           },
         },
       ]);
