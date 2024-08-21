@@ -4,11 +4,6 @@ import {
   handlePut,
   handleDelete,
 } from "./requestHandlers.js";
-import { sqliteTable } from "drizzle-orm/sqlite-core";
-import { jsonb, numeric, varchar } from "drizzle-orm/pg-core";
-import { drizzle } from "drizzle-orm/d1";
-import { eq } from "drizzle-orm";
-import { init_script } from "./init_script.js";
 
 export async function handleRequest(request, env, context) {
   var profile = {
@@ -26,49 +21,15 @@ export async function handleRequest(request, env, context) {
   var responseObject = {};
   switch (request.method) {
     case "GET": {
-      const db = drizzle(env.cache);
-      const cache = sqliteTable("cache", {
-        account_id: varchar("account_id").notNull().primaryKey(),
-        response: jsonb("response").notNull(),
-        last_update_datetime: numeric("last_update_datetime").notNull(),
-      });
+      responseObject = await handleGet(
+        env,
+        profile,
+        query,
+        req_url.pathname.split("/").pop()
+      );
 
-      try {
-        var res = await db
-          .select()
-          .from(cache)
-          .where(eq(cache.account_id, profile.id));
-      } catch (error) {
-        await init_script(env);
-        var res = await db
-          .select()
-          .from(cache)
-          .where(eq(cache.account_id, profile.id));
-      }
-      if (res.length == 0) {
-        responseObject = await handleGet(
-          env,
-          profile,
-          query,
-          req_url.pathname.split("/").pop()
-        );
-        await db
-          .insert(cache)
-          .values({
-            account_id: profile.id,
-            response: responseObject,
-            last_update_datetime: new Date().getTime(),
-          })
-          .execute();
-      } else {
-        if (await env.SETTINGS.get("CACHE_EXPIRY") == undefined) {
-          await env.SETTINGS.put("CACHE_EXPIRY", 5 * 60);  // 5 minutes
-        }
-        if (res[0].last_update_datetime < new Date().getTime() - await env.SETTINGS.get("CACHE_EXPIRY") * 1000) {
-          await db.delete(cache).where(eq(cache.account_id, profile.id)).execute();
-        }
-        responseObject = res[0].response;
-      }
+      responseObject = res[0].response;
+
       break;
     }
     case "PUT":
