@@ -17,7 +17,7 @@ export async function handleGet(env, profile, query, itemId) {
     };
   }
 
-  return env.GRAPHQL.fetch(
+  return await env.GRAPHQL.fetch(
     new Request("https://test.com", {
       method: "POST",
       headers: {
