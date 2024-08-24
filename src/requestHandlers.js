@@ -27,7 +27,7 @@ export async function handleGet(env, profile, query, itemId) {
         "X-Auth-Email": profile.email,
         "X-Auth-Name": profile.name,
         "X-Auth-Profile": profile.picture,
-        "X-Auth-Groups": profile.groups,
+        "X-Auth-Groups": JSON.stringify(profile.groups),
         "X-Auth-Provider": profile.provider,
       },
       body: JSON.stringify({
