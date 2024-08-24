@@ -13,22 +13,12 @@ resource "cloudflare_workers_route" "project_route" {
   script_name = cloudflare_workers_script.project_script.name
 }
 
-resource "cloudflare_workers_kv_namespace" "settings" {
-  account_id = var.cloudflare_account_id
-  title      = "${var.project_name}-${var.environment}-settings"
-}
-
 resource "cloudflare_workers_script" "project_script" {
   account_id         = var.cloudflare_account_id
   name               = "${var.project_name}-${var.environment}"
   content            = file("${path.module}/dist/index.mjs")
   compatibility_date = "2023-08-28"
   module             = true
-
-  kv_namespace_binding {
-    name         = "SETTINGS"
-    namespace_id = cloudflare_workers_kv_namespace.settings.id
-  }
 
   plain_text_binding {
     name = "DOMAIN"
@@ -51,10 +41,6 @@ resource "cloudflare_workers_script" "project_script" {
   }
 
   plain_text_binding {
-    name = "GCP_BIGQUERY_PROJECT_ID"
-    text = var.GCP_BIGQUERY_PROJECT_ID
-  }
-  plain_text_binding {
     name = "LOG_NAME"
     text = "${var.project_name}_worker_log"
   }
@@ -67,11 +53,6 @@ resource "cloudflare_workers_script" "project_script" {
   secret_text_binding {
     name = "GCP_BIGQUERY_CREDENTIALS"
     text = var.GCP_BIGQUERY_CREDENTIALS
-  }
-
-  secret_text_binding {
-    name = "GCP_USERINFO_CREDENTIALS"
-    text = var.GCP_USERINFO_CREDENTIALS
   }
 
   secret_text_binding {

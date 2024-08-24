@@ -24,7 +24,7 @@ export async function handleGet(env, profile, query, itemId) {
   var res = await GCPBigquery.query(
     env.GCP_BIGQUERY_PROJECT_ID,
     bigquery_token.access_token,
-    "select * from database_dataset.user_preferences p where account_id = '" +
+    "select * from pulsedb_dataset.user_preferences p where account_id = '" +
       profile.id +
       "'"
   );
@@ -50,7 +50,7 @@ export async function handleGet(env, profile, query, itemId) {
     var res = await GCPBigquery.query(
       env.GCP_BIGQUERY_PROJECT_ID,
       bigquery_token.access_token,
-      "insert into database_dataset.user_preferences (account_id, preferences, created_at, updated_at) values ('" +
+      "insert into pulsedb_dataset.user_preferences (account_id, preferences, created_at, updated_at) values ('" +
         profile.id +
         "', JSON '" +
         JSON.stringify(initial_prefs) +
@@ -86,7 +86,7 @@ export async function handlePut(env, profile, body) {
   var res = await GCPBigquery.query(
     env.GCP_BIGQUERY_PROJECT_ID,
     bigquery_token.access_token,
-    "select * from database_dataset.user_preferences p where account_id = '" +
+    "select * from pulsedb_dataset.user_preferences p where account_id = '" +
       profile.id +
       "'"
   );
@@ -100,7 +100,7 @@ export async function handlePut(env, profile, body) {
   var res = await GCPBigquery.query(
     env.GCP_BIGQUERY_PROJECT_ID,
     bigquery_token.access_token,
-    "update database_dataset.user_preferences set preferences = JSON '" +
+    "update pulsedb_dataset.user_preferences set preferences = JSON '" +
       JSON.stringify(obj.preferences) +
       "', updated_at = CURRENT_TIMESTAMP() where account_id = '" +
       profile.id +
@@ -110,7 +110,7 @@ export async function handlePut(env, profile, body) {
   var res = await GCPBigquery.query(
     env.GCP_BIGQUERY_PROJECT_ID,
     bigquery_token.access_token,
-    "select * from database_dataset.user_preferences p where account_id = '" +
+    "select * from pulsedb_dataset.user_preferences p where account_id = '" +
       profile.id +
       "'"
   );
