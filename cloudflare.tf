@@ -68,6 +68,11 @@ resource "cloudflare_workers_script" "project_script" {
     text = data.local_file.load_project_id.content
   }
 
+  service_binding {
+    name = "GRAPHQL"
+    service = "pulse-graphql-${var.environment}"
+  }
+
   secret_text_binding {
     name = "GCP_LOGGING_CREDENTIALS"
     text = var.GCP_LOGGING_CREDENTIALS

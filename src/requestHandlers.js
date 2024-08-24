@@ -17,58 +17,32 @@ export async function handleGet(env, profile, query, itemId) {
     };
   }
 
-  var bigquery_token = await new GCPAccessToken(
-    env.GCP_BIGQUERY_CREDENTIALS
-  ).getAccessToken("https://www.googleapis.com/auth/bigquery");
-
-  var res = await GCPBigquery.query(
-    env.GCP_BIGQUERY_PROJECT_ID,
-    bigquery_token.access_token,
-    "select * from pulsedb_dataset.user_info p where id = '" +
-      profile.id +
-      "'"
-  );
-  if (res.length == 0) {
-    var initial_prefs = {};
-    var keypair = await crypto.subtle.generateKey(
-      {
-        name: "RSA-OAEP",
-        modulusLength: 4096,
-        publicExponent: new Uint8Array([1, 0, 1]),
-        hash: "SHA-256",
+  return env.GRAPHQL.fetch(
+    new Request("", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Shared-Secret": env.GLOBAL_SHARED_SECRET,
+        "X-Auth-User": profile.id,
+        "X-Auth-Email": profile.email,
+        "X-Auth-Name": profile.name,
+        "X-Auth-Profile": profile.picture,
+        "X-Auth-Groups": profile.groups,
+        "X-Auth-Provider": profile.provider,
       },
-      true,
-      ["encrypt", "decrypt"]
-    );
-
-    var publicKey = await crypto.subtle.exportKey("jwk", keypair.publicKey);
-
-    var privateKey = await crypto.subtle.exportKey("jwk", keypair.privateKey);
-
-    initial_prefs.publicKey = publicKey;
-    initial_prefs.privateKey = privateKey;
-    var res = await GCPBigquery.query(
-      env.GCP_BIGQUERY_PROJECT_ID,
-      bigquery_token.access_token,
-      "insert into pulsedb_dataset.user_info (id, preferences, created_at, updated_at) values ('" +
-        profile.id +
-        "', JSON '" +
-        JSON.stringify(initial_prefs) +
-        "', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())"
-    );
-
-    returnObject["preferences"] = {
-      publicKey: publicKey,
-    };
-    returnObject["id"] = profile.id;
-    // returnObject["apiToken"] = await generateApiToken(env, publicKey);
-    return returnObject;
-  } else {
-    returnObject["preferences"] = JSON.parse(res[0].preferences);
-    returnObject["id"] = res[0].id;
-    // returnObject["apiToken"] = await generateApiToken(env, obj[0].preferences.publicKey);
-    return returnObject;
-  }
+      body: JSON.stringify({
+        query: `query {
+          user {
+            id
+            preferences {
+              key
+              value
+            }
+          }
+        }`,
+      }),
+    })
+  );
 }
 
 export async function handlePut(env, profile, body) {
