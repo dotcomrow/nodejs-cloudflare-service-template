@@ -46,8 +46,7 @@ export async function handleGet(env, profile, query, itemId) {
   );
 
   var resBody = await ret.json();
-  console.log(resBody);
-  return resBody;
+  return resBody.data.user;
 }
 
 export async function handlePut(env, profile, body) {
