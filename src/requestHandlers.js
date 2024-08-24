@@ -18,7 +18,8 @@ export async function handleGet(env, profile, query, itemId) {
   }
 
   var ret = await env.GRAPHQL.fetch(
-    new Request("https://pulse-graphql.dev.suncoast.systems/graphql", {
+    "https://pulse-graphql.dev.suncoast.systems/graphql",
+    {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -41,14 +42,13 @@ export async function handleGet(env, profile, query, itemId) {
           }
         }`,
       }),
-    })
+    }
   );
   console.log(JSON.stringify(ret));
   return ret;
 }
 
 export async function handlePut(env, profile, body) {
-
   if (profile.id == undefined) {
     return {
       message: "No account_id in profile",
@@ -62,9 +62,7 @@ export async function handlePut(env, profile, body) {
   var res = await GCPBigquery.query(
     env.GCP_BIGQUERY_PROJECT_ID,
     bigquery_token.access_token,
-    "select * from pulsedb_dataset.user_info p where id = '" +
-      profile.id +
-      "'"
+    "select * from pulsedb_dataset.user_info p where id = '" + profile.id + "'"
   );
 
   var obj = res[0];
@@ -86,9 +84,7 @@ export async function handlePut(env, profile, body) {
   var res = await GCPBigquery.query(
     env.GCP_BIGQUERY_PROJECT_ID,
     bigquery_token.access_token,
-    "select * from pulsedb_dataset.user_info p where id = '" +
-      profile.id +
-      "'"
+    "select * from pulsedb_dataset.user_info p where id = '" + profile.id + "'"
   );
 
   return {
