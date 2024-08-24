@@ -42,7 +42,7 @@ export async function handleGet(env, profile, query, itemId) {
         }`,
       }),
     })
-  );
+  ).body.json();
 }
 
 export async function handlePut(env, profile, body) {
