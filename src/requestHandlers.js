@@ -24,7 +24,7 @@ export async function handleGet(env, profile, query, itemId) {
   var res = await GCPBigquery.query(
     env.GCP_BIGQUERY_PROJECT_ID,
     bigquery_token.access_token,
-    "select * from pulsedb_dataset.user_info p where account_id = '" +
+    "select * from pulsedb_dataset.user_info p where id = '" +
       profile.id +
       "'"
   );
@@ -50,7 +50,7 @@ export async function handleGet(env, profile, query, itemId) {
     var res = await GCPBigquery.query(
       env.GCP_BIGQUERY_PROJECT_ID,
       bigquery_token.access_token,
-      "insert into pulsedb_dataset.user_info (account_id, preferences, created_at, updated_at) values ('" +
+      "insert into pulsedb_dataset.user_info (id, preferences, created_at, updated_at) values ('" +
         profile.id +
         "', JSON '" +
         JSON.stringify(initial_prefs) +
@@ -60,12 +60,12 @@ export async function handleGet(env, profile, query, itemId) {
     returnObject["preferences"] = {
       publicKey: publicKey,
     };
-    returnObject["account_id"] = profile.id;
+    returnObject["id"] = profile.id;
     // returnObject["apiToken"] = await generateApiToken(env, publicKey);
     return returnObject;
   } else {
     returnObject["preferences"] = JSON.parse(res[0].preferences);
-    returnObject["account_id"] = res[0].account_id;
+    returnObject["id"] = res[0].id;
     // returnObject["apiToken"] = await generateApiToken(env, obj[0].preferences.publicKey);
     return returnObject;
   }
@@ -86,7 +86,7 @@ export async function handlePut(env, profile, body) {
   var res = await GCPBigquery.query(
     env.GCP_BIGQUERY_PROJECT_ID,
     bigquery_token.access_token,
-    "select * from pulsedb_dataset.user_info p where account_id = '" +
+    "select * from pulsedb_dataset.user_info p where id = '" +
       profile.id +
       "'"
   );
@@ -102,7 +102,7 @@ export async function handlePut(env, profile, body) {
     bigquery_token.access_token,
     "update pulsedb_dataset.user_info set preferences = JSON '" +
       JSON.stringify(obj.preferences) +
-      "', updated_at = CURRENT_TIMESTAMP() where account_id = '" +
+      "', updated_at = CURRENT_TIMESTAMP() where id = '" +
       profile.id +
       "'"
   );
@@ -110,14 +110,14 @@ export async function handlePut(env, profile, body) {
   var res = await GCPBigquery.query(
     env.GCP_BIGQUERY_PROJECT_ID,
     bigquery_token.access_token,
-    "select * from pulsedb_dataset.user_info p where account_id = '" +
+    "select * from pulsedb_dataset.user_info p where id = '" +
       profile.id +
       "'"
   );
 
   return {
     preferences: JSON.parse(res[0].preferences),
-    account_id: res[0].account_id,
+    id: res[0].id,
   };
 }
 
