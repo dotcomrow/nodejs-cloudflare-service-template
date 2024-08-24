@@ -13,6 +13,24 @@ resource "cloudflare_workers_route" "project_route" {
   script_name = cloudflare_workers_script.project_script.name
 }
 
+resource "null_resource" "project_id" {
+  triggers = {
+    always_run = timestamp()
+  }
+
+  provisioner "local-exec" {
+    command = "${path.module}/scripts/get_project_id.sh"
+    environment = {
+       project = "pulsedb-${var.environment}"
+    }
+  }
+}
+
+data "local_file" "load_project_id" {
+    filename = "${path.module}/project_id"
+  depends_on = [ null_resource.project_id ]
+}
+
 resource "cloudflare_workers_script" "project_script" {
   account_id         = var.cloudflare_account_id
   name               = "${var.project_name}-${var.environment}"
@@ -43,6 +61,11 @@ resource "cloudflare_workers_script" "project_script" {
   plain_text_binding {
     name = "LOG_NAME"
     text = "${var.project_name}_worker_log"
+  }
+
+  plain_text_binding {
+    name = "GCP_BIGQUERY_PROJECT_ID"
+    text = data.local_file.load_project_id.content
   }
 
   secret_text_binding {
