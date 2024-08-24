@@ -18,7 +18,7 @@ export async function handleGet(env, profile, query, itemId) {
   }
 
   return env.GRAPHQL.fetch(
-    new Request("", {
+    new Request("https://test.com", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
