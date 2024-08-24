@@ -18,7 +18,7 @@ export async function handleGet(env, profile, query, itemId) {
   }
 
   return await env.GRAPHQL.fetch(
-    new Request("https://test.com", {
+    new Request("https://pulse-graphql.dev.suncoast.systems/graphql", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
