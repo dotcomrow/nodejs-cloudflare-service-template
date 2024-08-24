@@ -43,7 +43,7 @@ export async function handleGet(env, profile, query, itemId) {
       }),
     })
   );
-  console.log(ret);
+  console.log(JSON.stringify(ret));
   return ret;
 }
 
