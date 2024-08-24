@@ -20,7 +20,6 @@ export default {
         });
       }
     } catch (e) {
-      console.log(e);
       const responseError = serializeError(e);
       await LogUtility.logEntry(loggingContext, [
         {

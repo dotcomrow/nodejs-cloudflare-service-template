@@ -52,12 +52,6 @@ variable GCP_BIGQUERY_CREDENTIALS {
   nullable = false
 }
 
-variable GCP_USERINFO_CREDENTIALS {
-  description = "GCP UserInfo credentials"
-  type = string
-  nullable = false
-}
-
 variable GLOBAL_SHARED_SECRET {
   description = "Global shared secret"
   type = string
