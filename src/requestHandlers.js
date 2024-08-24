@@ -44,8 +44,10 @@ export async function handleGet(env, profile, query, itemId) {
       }),
     }
   );
-  console.log(ret.json());
-  return ret;
+
+  var resBody = await ret.json();
+  console.log(resBody);
+  return resBody;
 }
 
 export async function handlePut(env, profile, body) {
