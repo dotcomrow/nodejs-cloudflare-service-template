@@ -61,8 +61,8 @@ export async function handlePut(env, profile, body) {
     }`,
     variables: `{
         "preferences": {
-            "key":Object.keys(body)[0],
-            "value":body[Object.keys(body)[0]]
+            "key":` + Object.keys(body)[0] + `,
+            "value":` + body[Object.keys(body)[0]] + `
         }
     }`,
   });
