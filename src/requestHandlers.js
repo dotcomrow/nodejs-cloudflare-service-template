@@ -53,7 +53,20 @@ export async function handlePut(env, profile, body) {
     };
   }
 
-
+  var bodyJson = JSON.stringify({
+    query: `mutation updateUserPreferences($preferences: PreferencesInput!) {
+        updateUserPreferences(preferences: $preferences) {
+            id
+        }
+    }`,
+    variables: `{
+        "preferences": {
+            "key":Object.keys(body)[0],
+            "value":body[Object.keys(body)[0]]
+        }
+    }`,
+  });
+  console.log(bodyJson);
 
   var ret = await env.GRAPHQL.fetch("https://local/graphql", {
     method: "POST",
@@ -67,19 +80,7 @@ export async function handlePut(env, profile, body) {
       "X-Auth-Groups": JSON.stringify(profile.groups),
       "X-Auth-Provider": profile.provider,
     },
-    body: JSON.stringify({
-      query: `mutation updateUserPreferences($preferences: PreferencesInput!) {
-          updateUserPreferences(preferences: $preferences) {
-              id
-          }
-      }`,
-      variables: `{
-          "preferences": {
-              "key":Object.keys(body)[0],
-              "value":body[Object.keys(body)[0]]
-          }
-      }`,
-    }),
+    body: bodyJson,
   });
 
   var resBody = await ret.json();
