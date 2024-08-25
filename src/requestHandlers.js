@@ -59,13 +59,14 @@ export async function handlePut(env, profile, body) {
             id
         }
     }`,
-    variables: `{
+    variables:
+      {
         "preferences": {
-            "key":"` + Object.keys(body)[0] + `",
-            "value":"` + body[Object.keys(body)[0]] + `"
+            "key": Object.keys(body)[0],
+            "value":body[Object.keys(body)[0]]
         }
-    }`,
-  }).replace(/\n\t/g, "");
+    },
+  }).replace(/\n\t\\/g, "");
   console.log(bodyJson);
 
   var ret = await env.GRAPHQL.fetch("https://local/graphql", {
