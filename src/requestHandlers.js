@@ -65,7 +65,7 @@ export async function handlePut(env, profile, body) {
             "value":"` + body[Object.keys(body)[0]] + `"
         }
     }`,
-  }).replace(/\\/g, "");
+  }).replace(/\n\t/g, "");
   console.log(bodyJson);
 
   var ret = await env.GRAPHQL.fetch("https://local/graphql", {
