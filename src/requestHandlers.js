@@ -17,22 +17,20 @@ export async function handleGet(env, profile, query, itemId) {
     };
   }
 
-  var ret = await env.GRAPHQL.fetch(
-    "https://local/graphql",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Shared-Secret": env.GLOBAL_SHARED_SECRET,
-        "X-Auth-User": profile.id,
-        "X-Auth-Email": profile.email,
-        "X-Auth-Name": profile.name,
-        "X-Auth-Profile": profile.picture,
-        "X-Auth-Groups": JSON.stringify(profile.groups),
-        "X-Auth-Provider": profile.provider,
-      },
-      body: JSON.stringify({
-        query: `query {
+  var ret = await env.GRAPHQL.fetch("https://local/graphql", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Shared-Secret": env.GLOBAL_SHARED_SECRET,
+      "X-Auth-User": profile.id,
+      "X-Auth-Email": profile.email,
+      "X-Auth-Name": profile.name,
+      "X-Auth-Profile": profile.picture,
+      "X-Auth-Groups": JSON.stringify(profile.groups),
+      "X-Auth-Provider": profile.provider,
+    },
+    body: JSON.stringify({
+      query: `query {
           user {
             id
             preferences {
@@ -41,9 +39,8 @@ export async function handleGet(env, profile, query, itemId) {
             }
           }
         }`,
-      }),
-    }
-  );
+    }),
+  });
 
   var resBody = await ret.json();
   return resBody.data.user;
@@ -56,42 +53,37 @@ export async function handlePut(env, profile, body) {
     };
   }
 
-  var bigquery_token = await new GCPAccessToken(
-    env.GCP_BIGQUERY_CREDENTIALS
-  ).getAccessToken("https://www.googleapis.com/auth/bigquery");
+  var bodyJson = JSON.stringify({
+    query: `mutation updateUserPreferences($preferences: PreferencesInput!) {
+        updateUserPreferences(preferences: $preferences) {
+            id
+        }
+    }`,
+    variables: {
+      preferences: {
+        key: Object.keys(body)[0],
+        value: body[Object.keys(body)[0]],
+      },
+    },
+  });
 
-  var res = await GCPBigquery.query(
-    env.GCP_BIGQUERY_PROJECT_ID,
-    bigquery_token.access_token,
-    "select * from pulsedb_dataset.user_info p where id = '" + profile.id + "'"
-  );
+  var ret = await env.GRAPHQL.fetch("https://local/graphql", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Shared-Secret": env.GLOBAL_SHARED_SECRET,
+      "X-Auth-User": profile.id,
+      "X-Auth-Email": profile.email,
+      "X-Auth-Name": profile.name,
+      "X-Auth-Profile": profile.picture,
+      "X-Auth-Groups": JSON.stringify(profile.groups),
+      "X-Auth-Provider": profile.provider,
+    },
+    body: bodyJson,
+  });
 
-  var obj = res[0];
-  obj.preferences = JSON.parse(obj.preferences);
-  for (var key of Object.keys(body)) {
-    obj.preferences[key] = body[key];
-  }
-
-  var res = await GCPBigquery.query(
-    env.GCP_BIGQUERY_PROJECT_ID,
-    bigquery_token.access_token,
-    "update pulsedb_dataset.user_info set preferences = JSON '" +
-      JSON.stringify(obj.preferences) +
-      "', updated_at = CURRENT_TIMESTAMP() where id = '" +
-      profile.id +
-      "'"
-  );
-
-  var res = await GCPBigquery.query(
-    env.GCP_BIGQUERY_PROJECT_ID,
-    bigquery_token.access_token,
-    "select * from pulsedb_dataset.user_info p where id = '" + profile.id + "'"
-  );
-
-  return {
-    preferences: JSON.parse(res[0].preferences),
-    id: res[0].id,
-  };
+  var resBody = await ret.json();
+  return handleGet(env, profile, null, null);
 }
 
 async function generateApiToken(env, publicKey) {
