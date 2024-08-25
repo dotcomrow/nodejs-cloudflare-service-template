@@ -17,20 +17,22 @@ export async function handleGet(env, profile, query, itemId) {
     };
   }
 
-  var ret = await env.GRAPHQL.fetch("https://local/graphql", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Shared-Secret": env.GLOBAL_SHARED_SECRET,
-      "X-Auth-User": profile.id,
-      "X-Auth-Email": profile.email,
-      "X-Auth-Name": profile.name,
-      "X-Auth-Profile": profile.picture,
-      "X-Auth-Groups": JSON.stringify(profile.groups),
-      "X-Auth-Provider": profile.provider,
-    },
-    body: JSON.stringify({
-      query: `query {
+  var ret = await env.GRAPHQL.fetch(
+    "https://local/graphql",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Shared-Secret": env.GLOBAL_SHARED_SECRET,
+        "X-Auth-User": profile.id,
+        "X-Auth-Email": profile.email,
+        "X-Auth-Name": profile.name,
+        "X-Auth-Profile": profile.picture,
+        "X-Auth-Groups": JSON.stringify(profile.groups),
+        "X-Auth-Provider": profile.provider,
+      },
+      body: JSON.stringify({
+        query: `query {
           user {
             id
             preferences {
@@ -39,10 +41,16 @@ export async function handleGet(env, profile, query, itemId) {
             }
           }
         }`,
-    }),
-  });
+      }),
+    }
+  );
 
   var resBody = await ret.json();
+  var preferences = resBody.data.user.preferences;
+  resBody.data.user.preferences = {};
+  for (var i = 0; i < preferences.length; i++) {
+    resBody.data.user.preferences[preferences[i].key] = preferences[i].value;
+  }
   return resBody.data.user;
 }
 
