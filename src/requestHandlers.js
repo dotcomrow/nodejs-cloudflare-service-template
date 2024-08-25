@@ -66,7 +66,6 @@ export async function handlePut(env, profile, body) {
       },
     },
   });
-  console.log(bodyJson);
 
   var ret = await env.GRAPHQL.fetch("https://local/graphql", {
     method: "POST",
@@ -84,7 +83,7 @@ export async function handlePut(env, profile, body) {
   });
 
   var resBody = await ret.json();
-  return resBody.data.user;
+  return handleGet(env, profile, null, null);
 }
 
 async function generateApiToken(env, publicKey) {
